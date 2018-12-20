@@ -1,0 +1,25 @@
+.App {
+  text-align: center;
+  margin: auto;
+  width: 50%;
+  border: none;
+  padding: 10px;
+
+}
+
+
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width:500px;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+input {
+  width: 90%;
+}
+
+
