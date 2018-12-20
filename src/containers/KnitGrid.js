@@ -5,27 +5,32 @@ import GridRow from '../components/GridRow/GridRow'
 
 import uuidv4 from 'uuid/v4';
 
-const initialRowUuid = uuidv4();
-const initialCellUuid = uuidv4();
-let knitData = `sl1wyf	k1	left side cable pattern	[k1, p1] to 7sts before m	[k2, p2] 3 times	k2	p1	[k1, p1] to 7sts before m	[k2, p2] 3 times	k2	[p1, k1] to cable pattern	right side cable pattern	s1wyf	k1
-sl1wyf	k1	right side cable pattern	kp	left side cable pattern	sl1wyf	k1
-sl1wyf	k1	left side cable pattern	k2	[p1, k1] to 7 sts before m	[k2, p2] 3 times	k2	k1	[p1, k1] to 7 sts before m	[k2, p2] 3 times	k2	[k1, p1] to 2 sts before cable pattern	k2	right side cable pattern	sl1wyf	k1
-sl1wyf	k1	right side cable pattern	kp	left side cable pattern	sl1wyf	k1`
 
-class App extends Component {
+class KnitGrid extends Component {
+  constructor(props) {
+    super(props)
+    if (props.knitData) {
+      this.state = {
+        name: props.name ? props.name : "Knit Grid",
+        grid: {
+          rows: this.parseData(props.knitData)
+        }
+      }
+    }
+  }
 
   state = {
     grid: {
       name: "Knit Grid",
+      id: uuidv4(),
       rows: [
         {
-          id: initialRowUuid,
-          cells: [{value: '', id: initialCellUuid},
+          id: uuidv4(),
+          cells: [{value: '', id: uuidv4(), selected: false},
           ]
         }
       ]
     }
-
   }
 
   parseData = (rawData) => {
@@ -37,20 +42,14 @@ class App extends Component {
         cells: rowCellValues.map((cellValue) => {
           return {
             id: uuidv4(),
-            value: cellValue
+            value: cellValue,
+            selected: false
           }
         })
       }
     })
   }
 
-  componentDidMount() {
-    this.setState({
-      grid: {
-        rows: this.parseData(knitData)
-      }
-    })
-  }
 
   gridCellValueChangedHandler = (event, rowId, cellId) => {
     let newRows = this.state.grid.rows.map((row) => {
@@ -59,6 +58,7 @@ class App extends Component {
         cells: row.cells.map((cell) => {
           return {
             id: cell.id,
+            selected: cell.selected,
             value: (row.id === rowId && cell.id === cellId) ? event.target.value
                 : cell.value
           }
@@ -73,11 +73,49 @@ class App extends Component {
     })
   }
 
+  gridCellGotFocusHandler = (event, rowId, cellId) => {
+    let newRows = this.state.grid.rows.map((row) => {
+      return {
+        id: row.id,
+        cells: row.cells.map((cell) => {
+          return {
+            id: cell.id,
+            selected: (row.id === rowId) && (cell.id === cellId),
+            value: cell.value
+          }
+        })
+      }
+    })
+
+    this.setState({
+      grid: {
+        rows: newRows
+      }
+    })
+  }
+
+  submitKnitDataHandler = (event) => {
+    console.log(`Save ${this.state.name} data`)
+    console.log("data: " + JSON.stringify(this.state))
+
+    fetch('/api/saveKnitData', {
+      method: 'POST', // or 'PUT'
+      body: JSON.stringify(this.state), // data can be `string` or {object}!
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    }).then(res => res.json())
+    .then(response => console.log('Success:', JSON.stringify(response)))
+    .catch(error => console.error('Error:', error));
+  }
+
   render() {
 
     let grid = this.state.grid.rows.map((row) => {
           return (
-              <GridRow row={row} changed={this.gridCellValueChangedHandler}
+              <GridRow row={row}
+                       changed={this.gridCellValueChangedHandler}
+                       onfocus={this.gridCellGotFocusHandler}
                        key={row.id}/>
           )
         }
@@ -85,7 +123,11 @@ class App extends Component {
 
     return (
         <div className="App">
-          <h1>Knit Grid</h1>
+          <h1>{this.state.name}</h1>
+
+          <button onClick={this.submitKnitDataHandler}
+                  className="myButton">Save {this.state.name} Data</button>
+
           <table>
             <tbody>
             {grid}
@@ -96,4 +138,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default KnitGrid;
