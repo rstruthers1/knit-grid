@@ -124,7 +124,7 @@ class KnitGrid extends Component {
     );
 
     let button = null;
-    if (this.state.status != "retrieving") {
+    if (this.state.status !== "retrieving") {
       button = <button onClick={this.submitKnitDataHandler}
                        className="myButton">Save {this.state.name} Data
       </button>
