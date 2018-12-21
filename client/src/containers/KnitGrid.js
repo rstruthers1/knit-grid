@@ -17,7 +17,6 @@ class KnitGrid extends Component {
   }
 
   componentDidMount() {
-    console.log('component did mount');
     fetch(`/api/knitgrid?friendlyId=${this.state.friendlyId}`)
     .then(res => res.json())
     .then(response => {
@@ -32,49 +31,29 @@ class KnitGrid extends Component {
         this.setState({
           name: 'no data returned',
           status: 'failure_retrieving',
-          message: 'failed to load data'
+          message: 'Failed to load data'
         })
       }
     })
-    .catch(error => console.error('**** Error:', error));
+    .catch(error => {
+      this.setState(
+          {
+            status: 'failure_retrieving',
+            message: `Failed to load data ${JSON.stringify(error)}`
+          }
+      )
+    });
   }
 
   gridCellValueChangedHandler = (event, rowId, cellId) => {
-    let newRows = this.state.grid.map((row) => {
-      return {
-        id: row.id,
-        cells: row.cells.map((cell) => {
-          return {
-            id: cell.id,
-            selected: cell.selected,
-            value: (row.id === rowId && cell.id === cellId) ? event.target.value
-                : cell.value
-          }
-        })
-      }
-    });
-
     this.setState({
-      grid: newRows
+      grid: this.updateCell(rowId, cellId, {value: event.target.value})
     })
   };
 
   gridCellGotFocusHandler = (event, rowId, cellId) => {
-    let newRows = this.state.grid.map((row) => {
-      return {
-        id: row.id,
-        cells: row.cells.map((cell) => {
-          return {
-            id: cell.id,
-            selected: (row.id === rowId) && (cell.id === cellId),
-            value: cell.value
-          }
-        })
-      }
-    });
-
     this.setState({
-      grid: newRows
+      grid: this.updateCell(rowId, cellId, {selected: true}, {selected: false})
     })
   };
 
@@ -111,6 +90,29 @@ class KnitGrid extends Component {
       )
     });
   };
+
+  updateCell(rowId, cellId, targetCellUpdate, otherCellUpdate) {
+    return this.state.grid.map((row) => {
+      return {
+        id: row.id,
+        cells: row.cells.map((cell) => {
+          let cellCopy = {
+            id: cell.id,
+            selected: cell.selected,
+            value: cell.value
+          }
+          if (row.id === rowId && cell.id === cellId) {
+            return {...cellCopy, ...targetCellUpdate}
+          }
+          if (otherCellUpdate) {
+            return {...cellCopy, ...otherCellUpdate}
+          }
+          return cellCopy;
+        })
+      }
+    });
+  }
+
 
   render() {
     let grid = this.state.grid.map((row) => {
