@@ -46,7 +46,6 @@ p1	k2	p3	k4	p6	k4	p3	k2	p1`
  **/
 
 class App extends Component {
-
   render() {
     return (
         <div>
@@ -55,7 +54,6 @@ class App extends Component {
           <KnitGrid friendlyId="rachel.chimneyfire.right_side_cable_pattern"/>
         </div>
     )
-
   }
 }
 

@@ -1,9 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const pino = require('express-pino-logger')();
-const path = require('path')
-const mysql = require('mysql')
-const store = require('./store')
+const path = require('path');
+const store = require('./store');
 require('dotenv').config();
 
 const app = express();
@@ -24,24 +23,24 @@ app.get('/api/greeting', (req, res) => {
 
 app.post('/api/knitgrid', (req, res) => {
 
-  res.setHeader('Content-Type', 'application/json')
+  res.setHeader('Content-Type', 'application/json');
 
-  let friendlyId = req.body.friendlyId
-  let name = req.body.name
-  let grid = req.body.grid
+  let friendlyId = req.body.friendlyId;
+  let name = req.body.name;
+  let grid = req.body.grid;
 
   if (!friendlyId) {
-    res.send(JSON.stringify({message: "error: friendlyId is required"}))
+    res.send(JSON.stringify({message: "error: friendlyId is required"}));
     return;
   }
 
   if (!name) {
-    res.send(JSON.stringify({message: "error: name is required"}))
+    res.send(JSON.stringify({message: "error: name is required"}));
     return;
   }
 
   if (!grid) {
-    res.send(JSON.stringify({message: "error: grid is required"}))
+    res.send(JSON.stringify({message: "error: grid is required"}));
     return;
   }
 
@@ -49,7 +48,7 @@ app.post('/api/knitgrid', (req, res) => {
     res.send(JSON.stringify({message: message}))
   })
 
-})
+});
 
 app.get('/api/knitgrid', (req, res) => {
 
@@ -75,11 +74,11 @@ app.get('/api/knitgrid', (req, res) => {
         name: row.NAME,
         grid: JSON.parse(row.GRID_DATA)
       })
-    })
+    });
 
     res.send(JSON.stringify({data: grid}))
   })
-})
+});
 
 app.put('/api/knitgrid', (req, res) => {
 
@@ -111,11 +110,11 @@ app.put('/api/knitgrid', (req, res) => {
         name: row.NAME,
         grid: JSON.parse(row.GRID_DATA)
       })
-    })
+    });
 
     res.send(JSON.stringify({ data: grid}))
   })
-})
+});
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.

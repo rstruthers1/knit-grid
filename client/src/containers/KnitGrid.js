@@ -5,12 +5,14 @@ import GridRow from '../components/GridRow/GridRow'
 
 class KnitGrid extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       friendlyId: props.friendlyId,
-      name: "Loading...",
-      grid: []
+      name: '',
+      grid: [],
+      status: 'retrieving',
+      message: 'Loading...'
     }
   }
 
@@ -19,21 +21,23 @@ class KnitGrid extends Component {
     fetch(`/api/knitgrid?friendlyId=${this.state.friendlyId}`)
     .then(res => res.json())
     .then(response => {
-      console.log('**** Success - got data:', JSON.stringify(response))
       if (response.data.length > 0) {
         this.setState({
           name: response.data[0].name,
-          grid: response.data[0].grid
+          grid: response.data[0].grid,
+          status: 'retrieved',
+          message: ''
         })
       } else {
         this.setState({
-          name: "no data returned"
+          name: 'no data returned',
+          status: 'failure_retrieving',
+          message: 'failed to load data'
         })
       }
     })
     .catch(error => console.error('**** Error:', error));
   }
-
 
   gridCellValueChangedHandler = (event, rowId, cellId) => {
     let newRows = this.state.grid.map((row) => {
@@ -48,12 +52,12 @@ class KnitGrid extends Component {
           }
         })
       }
-    })
+    });
 
     this.setState({
       grid: newRows
     })
-  }
+  };
 
   gridCellGotFocusHandler = (event, rowId, cellId) => {
     let newRows = this.state.grid.map((row) => {
@@ -67,17 +71,20 @@ class KnitGrid extends Component {
           }
         })
       }
-    })
+    });
 
     this.setState({
       grid: newRows
     })
-  }
+  };
 
   submitKnitDataHandler = (event) => {
-    console.log(`Save ${this.state.name} data`)
-    console.log("data: " + JSON.stringify(this.state))
-
+    this.setState(
+        {
+          status: 'saving',
+          message: 'Saving Data...'
+        }
+    )
     fetch('/api/knitgrid', {
       method: 'PUT',
       body: JSON.stringify(this.state),
@@ -85,9 +92,25 @@ class KnitGrid extends Component {
         'Content-Type': 'application/json'
       }
     }).then(res => res.json())
-    .then(response => console.log('Success:', JSON.stringify(response)))
-    .catch(error => console.error('Error:', error));
-  }
+    .then(response => {
+      console.log('Success:', JSON.stringify(response))
+      this.setState(
+          {
+            status: 'saved',
+            message: ''
+          }
+      )
+    })
+    .catch(error => {
+      console.error('Error:', error)
+      this.setState(
+          {
+            status: 'save_error',
+            message: 'Failed to save data'
+          }
+      )
+    });
+  };
 
   render() {
     let grid = this.state.grid.map((row) => {
@@ -98,19 +121,26 @@ class KnitGrid extends Component {
                        key={row.id}/>
           )
         }
-    )
+    );
+
+    let button = null;
+    if (this.state.status != "retrieving") {
+      button = <button onClick={this.submitKnitDataHandler}
+                       className="myButton">Save {this.state.name} Data
+      </button>
+    }
 
     return (
         <div className="App">
           <h1>{this.state.name}</h1>
-          <button onClick={this.submitKnitDataHandler}
-                  className="myButton">Save {this.state.name} Data
-          </button>
+          <h2>{this.state.message}</h2>
+          {button}
           <table>
             <tbody>
             {grid}
             </tbody>
           </table>
+
         </div>
     );
   }
