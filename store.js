@@ -25,7 +25,7 @@ module.exports = {
     .update( {
       GRID_DATA: JSON.stringify(grid)
     })
-    .then(updatedRows => cb(rows, null))
+    .then(updatedRows => cb(updatedRows, null))
     .error(reason => cb([], reason))
     .catch(error => cb([], error))
   }

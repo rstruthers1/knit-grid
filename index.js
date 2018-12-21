@@ -97,22 +97,20 @@ app.put('/api/knitgrid', (req, res) => {
     return;
   }
 
-  store.updateKnitGrid({friendlyId, grid}, (data, error) => {
+  store.updateKnitGrid({friendlyId, grid}, (result, error) => {
     if (error) {
       console.log("*** error: " + error);
-      res.send(JSON.stringify({error: error, data: []}));
+      res.send(JSON.stringify({error: error}));
       return;
     }
 
-    let grid = data.map((row) => {
-      return ({
-        friendlyId: row.FRIENDLY_ID,
-        name: row.NAME,
-        grid: JSON.parse(row.GRID_DATA)
-      })
-    });
-
-    res.send(JSON.stringify({ data: grid}))
+    let message = JSON.stringify(result);
+    if (result == 1) {
+      message += " row updated"
+    } else {
+      message += " rows updated"
+    }
+    res.send(JSON.stringify({ message: message}))
   })
 });
 

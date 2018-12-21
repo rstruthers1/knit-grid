@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-
 import './App.css';
 import GridRow from '../components/GridRow/GridRow'
 
@@ -39,7 +38,7 @@ class KnitGrid extends Component {
       this.setState(
           {
             status: 'failure_retrieving',
-            message: `Failed to load data ${JSON.stringify(error)}`
+            message: 'Failed to load data '
           }
       )
     });
@@ -113,6 +112,11 @@ class KnitGrid extends Component {
     });
   }
 
+  saveButtonDisabled = () => {
+    return this.state.status
+        && (this.state.status === 'saving'
+            || this.state.status === 'retrieving');
+  }
 
   render() {
     let grid = this.state.grid.map((row) => {
@@ -127,9 +131,9 @@ class KnitGrid extends Component {
 
     let button = null;
     if (this.state.status !== "retrieving") {
-      button = <button onClick={this.submitKnitDataHandler}
-                       className="myButton">Save {this.state.name} Data
-      </button>
+      button =  <button onClick={this.submitKnitDataHandler}
+                        className="myButton"
+      disabled={this.saveButtonDisabled()}>Save {this.state.name} Data</button>
     }
 
     return (
