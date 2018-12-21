@@ -5,32 +5,18 @@ import GridRow from '../components/GridRow/GridRow'
 
 import uuidv4 from 'uuid/v4';
 
-
 class KnitGrid extends Component {
   constructor(props) {
     super(props)
-    if (props.knitData) {
-      this.state = {
-        name: props.name ? props.name : "Knit Grid",
-        grid: {
-          rows: this.parseData(props.knitData)
-        }
+
+    this.state = {
+      friendlyId: props.gridFriendlyId ? props.gridFriendlyId : "knit-grid-" + uuidv4(),
+      name: props.name ? props.name : "Knit Grid",
+      grid: {
+        rows: props.gridData ? this.parseData(props.gridData) : []
       }
     }
-  }
 
-  state = {
-    grid: {
-      name: "Knit Grid",
-      id: uuidv4(),
-      rows: [
-        {
-          id: uuidv4(),
-          cells: [{value: '', id: uuidv4(), selected: false},
-          ]
-        }
-      ]
-    }
   }
 
   parseData = (rawData) => {
@@ -49,7 +35,6 @@ class KnitGrid extends Component {
       }
     })
   }
-
 
   gridCellValueChangedHandler = (event, rowId, cellId) => {
     let newRows = this.state.grid.rows.map((row) => {
@@ -101,7 +86,7 @@ class KnitGrid extends Component {
     fetch('/api/saveKnitData', {
       method: 'POST', // or 'PUT'
       body: JSON.stringify(this.state), // data can be `string` or {object}!
-      headers:{
+      headers: {
         'Content-Type': 'application/json'
       }
     }).then(res => res.json())
@@ -126,7 +111,8 @@ class KnitGrid extends Component {
           <h1>{this.state.name}</h1>
 
           <button onClick={this.submitKnitDataHandler}
-                  className="myButton">Save {this.state.name} Data</button>
+                  className="myButton">Save {this.state.name} Data
+          </button>
 
           <table>
             <tbody>

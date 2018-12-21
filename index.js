@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const pino = require('express-pino-logger')();
 const path = require('path')
 const mysql = require('mysql')
+const store = require('./store')
 require('dotenv').config();
 
 
@@ -29,7 +30,7 @@ app.post('/api/saveKnitData', (req, res) => {
   res.setHeader('Content-Type', 'application/json')
   // res.send(JSON.stringify({message: "success"}))
 
-  const connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL)
+  const connection = mysql.createConnection(process.env.JAWSDB_URL)
   connection.connect(function(err) {
     if (err) {
       console.error('error connecting: ' + err.stack);

@@ -48,9 +48,15 @@ class App extends Component {
   render() {
     return (
         <div>
-          <KnitGrid knitData={lowerBodyData} name="Lower Body"/>
-          <KnitGrid knitData={leftSideCablePatternData} name="Left Side Cable Pattern"/>
-          <KnitGrid knitData={rightSideCablePatternData} name="Right Side Cable Pattern"/>
+          <KnitGrid gridData={lowerBodyData}
+                    name="Lower Body"
+                    friendlyId="rachel.chimneyfire.lower_body"/>
+          <KnitGrid gridData={leftSideCablePatternData}
+                    name="Left Side Cable Pattern"
+                    friendlyId="rachel.chimneyfire.left_side_cable_pattern"/>
+          <KnitGrid gridData={rightSideCablePatternData}
+                    name="Right Side Cable Pattern"
+                    friendlyId="rachel.chimneyfire.right_side_cable_pattern"/>
         </div>
     )
 
