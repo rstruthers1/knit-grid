@@ -3,41 +3,40 @@ import React, {Component} from 'react';
 import './App.css';
 import GridRow from '../components/GridRow/GridRow'
 
-import uuidv4 from 'uuid/v4';
-
 class KnitGrid extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      friendlyId: props.gridFriendlyId ? props.gridFriendlyId : "knit-grid-" + uuidv4(),
-      name: props.name ? props.name : "Knit Grid",
-      grid: {
-        rows: props.gridData ? this.parseData(props.gridData) : []
-      }
+      friendlyId: props.friendlyId,
+      name: "Loading...",
+      grid: []
     }
-
   }
 
-  parseData = (rawData) => {
-    let lines = rawData.split(/\r?\n/g)
-    return lines.map((line) => {
-      let rowCellValues = line.split('\t')
-      return {
-        id: uuidv4(),
-        cells: rowCellValues.map((cellValue) => {
-          return {
-            id: uuidv4(),
-            value: cellValue,
-            selected: false
-          }
+  componentDidMount() {
+    console.log('component did mount');
+    fetch(`/api/knitgrid?friendlyId=${this.state.friendlyId}`)
+    .then(res => res.json())
+    .then(response => {
+      console.log('**** Success - got data:', JSON.stringify(response))
+      if (response.data.length > 0) {
+        this.setState({
+          name: response.data[0].name,
+          grid: response.data[0].grid
+        })
+      } else {
+        this.setState({
+          name: "no data returned"
         })
       }
     })
+    .catch(error => console.error('**** Error:', error));
   }
 
+
   gridCellValueChangedHandler = (event, rowId, cellId) => {
-    let newRows = this.state.grid.rows.map((row) => {
+    let newRows = this.state.grid.map((row) => {
       return {
         id: row.id,
         cells: row.cells.map((cell) => {
@@ -52,14 +51,12 @@ class KnitGrid extends Component {
     })
 
     this.setState({
-      grid: {
-        rows: newRows
-      }
+      grid: newRows
     })
   }
 
   gridCellGotFocusHandler = (event, rowId, cellId) => {
-    let newRows = this.state.grid.rows.map((row) => {
+    let newRows = this.state.grid.map((row) => {
       return {
         id: row.id,
         cells: row.cells.map((cell) => {
@@ -73,9 +70,7 @@ class KnitGrid extends Component {
     })
 
     this.setState({
-      grid: {
-        rows: newRows
-      }
+      grid: newRows
     })
   }
 
@@ -83,9 +78,9 @@ class KnitGrid extends Component {
     console.log(`Save ${this.state.name} data`)
     console.log("data: " + JSON.stringify(this.state))
 
-    fetch('/api/saveKnitData', {
-      method: 'POST', // or 'PUT'
-      body: JSON.stringify(this.state), // data can be `string` or {object}!
+    fetch('/api/knitgrid', {
+      method: 'PUT',
+      body: JSON.stringify(this.state),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -95,8 +90,7 @@ class KnitGrid extends Component {
   }
 
   render() {
-
-    let grid = this.state.grid.rows.map((row) => {
+    let grid = this.state.grid.map((row) => {
           return (
               <GridRow row={row}
                        changed={this.gridCellValueChangedHandler}
@@ -109,11 +103,9 @@ class KnitGrid extends Component {
     return (
         <div className="App">
           <h1>{this.state.name}</h1>
-
           <button onClick={this.submitKnitDataHandler}
                   className="myButton">Save {this.state.name} Data
           </button>
-
           <table>
             <tbody>
             {grid}
