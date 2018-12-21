@@ -99,18 +99,13 @@ class KnitGrid extends Component {
       return {
         id: row.id,
         cells: row.cells.map((cell) => {
-          let cellCopy = {
-            id: cell.id,
-            selected: cell.selected,
-            value: cell.value
-          }
           if (row.id === rowId && cell.id === cellId) {
-            return {...cellCopy, ...targetCellUpdate}
+            return {...cell, ...targetCellUpdate}
           }
           if (otherCellUpdate) {
-            return {...cellCopy, ...otherCellUpdate}
+            return {...cell, ...otherCellUpdate}
           }
-          return cellCopy;
+          return {...cell};
         })
       }
     });
@@ -124,6 +119,9 @@ class KnitGrid extends Component {
     if (this.state.changeSaved) {
       if (this.state.status === 'retrieving') {
         return 'Loading data...'
+      }
+      if (this.state.status === 'failure_retrieving') {
+        return `Failed to Load Data`
       }
       return `${this.state.name} Data Saved`
     } else {
