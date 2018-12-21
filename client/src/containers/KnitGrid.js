@@ -63,7 +63,7 @@ class KnitGrid extends Component {
     this.setState(
         {
           status: 'saving',
-          message: 'Saving Data...'
+          message: ''
         }
     )
     fetch('/api/knitgrid', {
@@ -117,13 +117,19 @@ class KnitGrid extends Component {
   }
 
   saveButtonDisabled = () => {
-    return this.state.changeSaved;
+    return this.state.changeSaved || this.state.status === 'saving'
   };
 
   buttonText = () => {
     if (this.state.changeSaved) {
+      if (this.state.status === 'retrieving') {
+        return 'Loading data...'
+      }
       return `${this.state.name} Data Saved`
     } else {
+      if (this.state.status === 'saving') {
+        return `Saving ${this.state.name} Data`
+      }
       return `Save ${this.state.name} Data`
     }
   };
@@ -151,7 +157,7 @@ class KnitGrid extends Component {
             {grid}
             </tbody>
           </table>
-
+          <hr/>
         </div>
     );
   }
