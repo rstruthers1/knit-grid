@@ -68,6 +68,7 @@ table, th, td {
   text-shadow:0px 1px 0px #528ecc;
   margin-bottom: 10px;
 }
+
 .myButton:hover {
   background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #80b5ea), color-stop(1, #bddbfa));
   background:-moz-linear-gradient(top, #80b5ea 5%, #bddbfa 100%);
@@ -83,4 +84,12 @@ table, th, td {
   top:1px;
 }
 
+.myButton:disabled,
+button[disabled]{
+  border: 1px solid #999999;
+  background: none;
+  background-color: #cccccc;
+  color: #666666;
+  text-shadow: none;
+}
 

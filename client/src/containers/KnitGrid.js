@@ -11,7 +11,8 @@ class KnitGrid extends Component {
       name: '',
       grid: [],
       status: 'retrieving',
-      message: 'Loading...'
+      message: 'Loading...',
+      changeSaved: true
     }
   }
 
@@ -46,13 +47,15 @@ class KnitGrid extends Component {
 
   gridCellValueChangedHandler = (event, rowId, cellId) => {
     this.setState({
-      grid: this.updateCell(rowId, cellId, {value: event.target.value})
+      grid: this.updateCell(rowId, cellId, {value: event.target.value}),
+      changeSaved: false
     })
   };
 
   gridCellGotFocusHandler = (event, rowId, cellId) => {
     this.setState({
-      grid: this.updateCell(rowId, cellId, {selected: true}, {selected: false})
+      grid: this.updateCell(rowId, cellId, {selected: true}, {selected: false}),
+      changeSaved: false
     })
   };
 
@@ -75,7 +78,8 @@ class KnitGrid extends Component {
       this.setState(
           {
             status: 'saved',
-            message: ''
+            message: '',
+            changeSaved: true
           }
       )
     })
@@ -113,10 +117,16 @@ class KnitGrid extends Component {
   }
 
   saveButtonDisabled = () => {
-    return this.state.status
-        && (this.state.status === 'saving'
-            || this.state.status === 'retrieving');
-  }
+    return this.state.changeSaved;
+  };
+
+  buttonText = () => {
+    if (this.state.changeSaved) {
+      return `${this.state.name} Data Saved`
+    } else {
+      return `Save ${this.state.name} Data`
+    }
+  };
 
   render() {
     let grid = this.state.grid.map((row) => {
@@ -129,18 +139,13 @@ class KnitGrid extends Component {
         }
     );
 
-    let button = null;
-    if (this.state.status !== "retrieving") {
-      button =  <button onClick={this.submitKnitDataHandler}
-                        className="myButton"
-      disabled={this.saveButtonDisabled()}>Save {this.state.name} Data</button>
-    }
-
     return (
         <div className="App">
           <h1>{this.state.name}</h1>
           <h2>{this.state.message}</h2>
-          {button}
+          <button onClick={this.submitKnitDataHandler}
+                  className="myButton"
+                  disabled={this.saveButtonDisabled()}>{this.buttonText()}</button>
           <table>
             <tbody>
             {grid}
