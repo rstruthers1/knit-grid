@@ -2,6 +2,7 @@
   "name": "knit-grid",
   "version": "0.1.0",
   "proxy": "http://localhost:5000",
+  "license": "UNLICENSED",
   "dependencies": {
     "d3": "^5.7.0",
     "react": "^16.6.3",

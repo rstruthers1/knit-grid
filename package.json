@@ -2,6 +2,7 @@
   "name": "knit-grid",
   "version": "0.1.0",
   "main": "index.js",
+  "license": "UNLICENSED",
   "dependencies": {
     "body-parser": "^1.18.3",
     "dotenv": "^6.2.0",
