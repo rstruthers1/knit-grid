@@ -22,7 +22,7 @@ const gridcell = (props) => {
             title={props.cell.value}
             onChange={(event) => props.changed(event, props.rowId, props.cell.id)}
             onFocus={(event) => props.onfocus(event, props.rowId, props.cell.id)}
-            onDoubleClick={(event) => {alert(props.cell.value)}}
+            onDoubleClick={() => {alert(props.cell.value)}}
         />
       </td>
   )
