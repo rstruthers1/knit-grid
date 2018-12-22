@@ -1,6 +1,7 @@
 import React from 'react'
 
 import '../../../containers/App.css';
+import Tooltip from '../../../containers/Tooltip'
 
 const gridcell = (props) => {
   let inputStyle = {backgroundColor: 'white' }
@@ -13,7 +14,8 @@ const gridcell = (props) => {
   }
 
   return (
-      <td className="tooltip">
+      <td>
+        <Tooltip message={props.cell.value} position={'top'}>
         <input
             className="myInput"
             style={inputStyle}
@@ -21,9 +23,8 @@ const gridcell = (props) => {
             value={props.cell.value}
             onChange={(event) => props.changed(event, props.rowId, props.cell.id)}
             onFocus={(event) => props.onfocus(event, props.rowId, props.cell.id)}
-            on
         />
-        <span className="tooltiptext">{props.cell.value}</span>
+        </Tooltip>
       </td>
   )
 }
