@@ -121,7 +121,7 @@ class KnitGrid extends Component {
         return 'Loading data...'
       }
       if (this.state.status === 'failure_retrieving') {
-        return `Failed to Load Data`
+        return 'Failed to Load Data'
       }
       return `${this.state.name} Data Saved`
     } else {

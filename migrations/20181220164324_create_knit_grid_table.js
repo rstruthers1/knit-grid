@@ -6,6 +6,11 @@ exports.up = function(knex, Promise) {
     t.string('NAME').notNull()
     t.json('GRID_DATA')
     t.timestamps(true, true)
+    /**
+     * ALTER TABLE KNIT_GRID
+     MODIFY  COLUMN updated_at
+     TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW();
+     */
 
   })
 };
