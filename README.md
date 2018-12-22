@@ -1,5 +1,16 @@
 This project was bootstrapped with [Create React KnitGrid](https://github.com/facebook/create-react-app).
 
+# Knit Grid
+
+## Start server
+In project directory `yarn start`
+
+## Start react client
+```
+cd client
+yarn start
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
