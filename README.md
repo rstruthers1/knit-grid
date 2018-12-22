@@ -1,5 +1,3 @@
-This project was bootstrapped with [Create React KnitGrid](https://github.com/facebook/create-react-app).
-
 # Knit Grid
 
 ## Start server
@@ -10,6 +8,8 @@ In project directory `yarn start`
 cd client
 yarn start
 ```
+
+This project was bootstrapped with [Create React KnitGrid](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 

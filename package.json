@@ -5,10 +5,13 @@
   "license": "UNLICENSED",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "express-pino-logger": "^4.0.0",
+    "http-errors": "^1.7.1",
     "knex": "^0.16.3",
+    "morgan": "^1.9.1",
     "mysql": "^2.16.0",
     "mysql-parse": "^2.0.8",
     "node-env-run": "^3.0.2",
@@ -19,7 +22,7 @@
     "pino-colada": "^1.4.4"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "node app.js",
     "heroku-postbuild": "cd client && yarn && yarn run build"
   }
 }
