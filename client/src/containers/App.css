@@ -93,3 +93,37 @@ button[disabled]{
   text-shadow: none;
 }
 
+.tooltip {
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  margin-left: -140px;
+  margin-top: -30px;
+  background-color: grey;
+  font-size: 10px;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltip .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 100%; /* At the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: grey transparent transparent transparent;
+}

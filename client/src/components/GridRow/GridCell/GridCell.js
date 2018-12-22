@@ -13,17 +13,17 @@ const gridcell = (props) => {
   }
 
   return (
-      <td>
+      <td className="tooltip">
         <input
             className="myInput"
             style={inputStyle}
             type="text"
             value={props.cell.value}
-            title={props.cell.value}
             onChange={(event) => props.changed(event, props.rowId, props.cell.id)}
             onFocus={(event) => props.onfocus(event, props.rowId, props.cell.id)}
-            onDoubleClick={() => {alert(props.cell.value)}}
+            on
         />
+        <span className="tooltiptext">{props.cell.value}</span>
       </td>
   )
 }
