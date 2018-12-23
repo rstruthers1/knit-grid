@@ -1,3 +1,5 @@
+// See: https://knexjs.org
+
 const knex = require('knex')(require('./knexfile'))
 
 module.exports = {
@@ -30,3 +32,7 @@ module.exports = {
     .catch(error => cb([], error))
   }
 }
+
+/**
+ * Check out: https://www.guillermocava.com/is-there-a-mysql-option-feature-to-track-history-of-changes-to-records/
+ */

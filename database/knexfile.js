@@ -1,3 +1,5 @@
+// See: https://knexjs.org
+
 require('dotenv').config();
 const { parseUri } = require('mysql-parse')
 

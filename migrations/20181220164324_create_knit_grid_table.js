@@ -1,3 +1,4 @@
+// See: https://knexjs.org
 
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('KNIT_GRID', function (t) {
