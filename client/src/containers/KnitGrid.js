@@ -12,7 +12,8 @@ class KnitGrid extends Component {
       grid: [],
       status: 'retrieving',
       message: 'Loading...',
-      changeSaved: true
+      changeSaved: true,
+      selectedCellId: null
     }
   }
 
@@ -21,11 +22,13 @@ class KnitGrid extends Component {
     .then(res => res.json())
     .then(response => {
       if (response.data.length > 0) {
+
         this.setState({
           name: response.data[0].name,
           grid: response.data[0].grid,
           status: 'retrieved',
-          message: ''
+          message: '',
+          selectedCellId: this.getSelectedCellId(response.data[0].grid)
         })
       } else {
         this.setState({
@@ -47,15 +50,18 @@ class KnitGrid extends Component {
 
   gridCellValueChangedHandler = (event, rowId, cellId) => {
     this.setState({
-      grid: this.updateCell(rowId, cellId, {value: event.target.value}),
+      grid: this.copyGridWithModifiedCellAdded(rowId, cellId,
+          {value: event.target.value}),
       changeSaved: false
     })
   };
 
   gridCellGotFocusHandler = (event, rowId, cellId) => {
     this.setState({
-      grid: this.updateCell(rowId, cellId, {selected: true}, {selected: false}),
-      changeSaved: false
+      grid: this.copyGridWithModifiedCellAdded(rowId, cellId, {selected: true},
+          {selected: false}),
+      changeSaved: cellId === this.state.selectedCellId,
+      selectedCellId: cellId
     })
   };
 
@@ -74,7 +80,6 @@ class KnitGrid extends Component {
       }
     }).then(res => res.json())
     .then(response => {
-      console.log('Success:', JSON.stringify(response))
       this.setState(
           {
             status: 'saved',
@@ -94,7 +99,8 @@ class KnitGrid extends Component {
     });
   };
 
-  updateCell(rowId, cellId, targetCellUpdate, otherCellUpdate) {
+  copyGridWithModifiedCellAdded = (rowId, cellId, targetCellUpdate,
+      otherCellUpdate) => {
     return this.state.grid.map((row) => {
       return {
         id: row.id,
@@ -108,7 +114,24 @@ class KnitGrid extends Component {
           return {...cell};
         })
       }
-    });
+    })
+  }
+
+  getSelectedCellId(grid) {
+    let selectedCellId = null
+    grid.forEach(row => {
+      row.cells.forEach(cell => {
+            if (cell.selected) {
+              selectedCellId =  cell.id
+              return
+            }
+          }
+      )
+      if (selectedCellId) {
+        return
+      }
+    })
+    return selectedCellId
   }
 
   saveButtonDisabled = () => {
@@ -159,6 +182,7 @@ class KnitGrid extends Component {
         </div>
     );
   }
+
 }
 
 export default KnitGrid;

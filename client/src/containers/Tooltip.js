@@ -24,6 +24,12 @@ class Tooltip extends Component {
     this.setState({displayTooltip: true})
   }
 
+  showToolTipIfMessageNotEmpty = () => {
+    if (this.props.message) {
+      this.showTooltip()
+    }
+  }
+
   render() {
     let message = this.props.message
     let position = this.props.position
@@ -38,7 +44,7 @@ class Tooltip extends Component {
         }
           <span
               className='tooltip-trigger'
-              onMouseOver={this.showTooltip}
+              onMouseOver={this.showToolTipIfMessageNotEmpty}
           >
           {this.props.children}
         </span>
