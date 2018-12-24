@@ -57,10 +57,11 @@ class KnitGrid extends Component {
   };
 
   gridCellGotFocusHandler = (event, rowId, cellId) => {
+    const selectedCellId = this.state.selectedCellId
     this.setState({
       grid: this.copyGridWithModifiedCellAdded(rowId, cellId, {selected: true},
           {selected: false}),
-      changeSaved: cellId === this.state.selectedCellId,
+      changeSaved: cellId === selectedCellId,
       selectedCellId: cellId
     })
   };
