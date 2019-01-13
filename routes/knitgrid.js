@@ -2,6 +2,46 @@ const express = require('express');
 const router = express.Router();
 const store = require('../database/store');
 
+router.param('knitgridId', function (req, res, next, knitgridId) {
+  console.log("*** knitgridId: " + knitgridId);
+  // once validation is done save the new item in the req
+  req.knitgridId = knitgridId;
+  // go to the next thing
+  next();
+});
+
+router.get('/:knitgridId', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  const knitgridId = req.params.knitgridId;
+
+  console.log("*** knitgridId: " + knitgridId);
+
+  let id = knitgridId;
+  store.readKnitGridWithId({id}, (data, error) => {
+    if (error) {
+      console.log("*** error: " + error);
+      res.send(JSON.stringify({error: error, data: []}));
+      return;
+    }
+
+    console.log("*** data: " + JSON.stringify(data));
+    if (data.length === 0) {
+      res.send(JSON.stringify({knitgrid: null}));
+      return;
+    }
+
+    let knitgrid = {};
+    knitgrid.id = data[0].ID;
+    knitgrid.name = data[0].NAME;
+    knitgrid.grid = JSON.parse(data[0].GRID_DATA);
+
+    console.log("*** knitgrid: " + JSON.stringify(knitgrid));
+
+    res.send(JSON.stringify({data: knitgrid}));
+  })
+});
+
+
 router.get('/', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
 

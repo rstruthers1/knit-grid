@@ -1,21 +1,24 @@
 .App {
-  text-align: center;
-  margin: auto;
-  width: 99%;
-  border: none;
-  padding: 10px;
+  /*text-align: center;*/
+  /*margin: auto;*/
+  /*width: 99%;*/
+  /*border: none;*/
+  /*padding: 10px;*/
 }
 
-table {
+.grid table {
   border-collapse: collapse;
+  width: 1000px;
 }
 
-table, th, td {
+.grid table, th, td {
   border: 1px solid black;
+  padding: .1px;
 }
 
 .myInput {
   width: 100%;
+  font-size: 20px;
   padding: 1px;
   margin: 0px;
   box-sizing: border-box;
@@ -181,5 +184,84 @@ button[disabled]{
   text-align: center;
 }
 
+.myForm input[type=text] {
+  width: 200px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
+.myForm label {
+  display: inline-block;
+  width: 100px;
+  text-align: left;
+}
+
+.treeContainer {
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  border-image-source: initial;
+  border-image-slice: initial;
+  border-image-width: initial;
+  border-image-outset: initial;
+  border-image-repeat: initial;
+  -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
+  box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
+  border-radius: .28571429rem;
+  min-height: 2.85714286em;
+  padding-top: 10px;
+  padding-left: 0px;
+  margin-top: 0px;
+}
+
+.treeDiv{
+  float:left;
+  width:auto;
+  min-width: 400px;
+  height:auto;
+  min-height: 500px;
+  margin-left: 20px;
+}
+
+/* The sidebar menu */
+.sidenav {
+  height: 100%; /* Full-height: remove this if you want "auto" height */
+  width: 160px; /* Set the width of the sidebar */
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0;
+  background-color: #111; /* Black */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 20px;
+}
 
 
+.dimmed.dimmable > .ui.animating.dimmer, .dimmed.dimmable > .ui.visible.dimmer, .ui.active.dimmer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ui.modal,
+.ui.active.modal {
+  margin: 0 auto!important;
+  top: auto !important;
+  left: auto !important;
+  transform-origin: center !important;
+  transition: all ease .5s;
+  height: auto;
+  width: auto;
+}
+
+.myModal {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  margin: auto;
+}

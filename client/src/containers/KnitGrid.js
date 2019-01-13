@@ -8,6 +8,7 @@ class KnitGrid extends Component {
 
     this.state = {
       friendlyId: props.friendlyId,
+      id: props.id,
       name: '',
       grid: [],
       status: 'retrieving',
@@ -18,19 +19,20 @@ class KnitGrid extends Component {
   }
 
   componentDidMount() {
-    fetch(`/api/knitgrid?friendlyId=${this.state.friendlyId}`)
+    fetch(`/api/knitgrid/${this.state.id}`)
     .then(res => res.json())
     .then(response => {
-      if (response.data.length > 0) {
+      if (response.data) {
 
         this.setState({
-          name: response.data[0].name,
-          grid: response.data[0].grid,
+          name: response.data.name,
+          grid: response.data.grid,
           status: 'retrieved',
           message: '',
-          selectedCellId: this.getSelectedCellId(response.data[0].grid)
+          selectedCellId: this.getSelectedCellId(response.data.grid)
         })
       } else {
+
         this.setState({
           name: 'no data returned',
           status: 'failure_retrieving',
@@ -39,6 +41,7 @@ class KnitGrid extends Component {
       }
     })
     .catch(error => {
+      console.log("caught error: " + JSON.string(error));
       this.setState(
           {
             status: 'failure_retrieving',
@@ -72,7 +75,7 @@ class KnitGrid extends Component {
           status: 'saving',
           message: ''
         }
-    )
+    );
     fetch('/api/knitgrid', {
       method: 'PUT',
       body: JSON.stringify(this.state),
@@ -174,7 +177,7 @@ class KnitGrid extends Component {
           <button onClick={this.submitKnitDataHandler}
                   className="myButton"
                   disabled={this.saveButtonDisabled()}>{this.buttonText()}</button>
-          <table>
+          <table style={{height:'500px', width: '700px'}}>
             <tbody>
             {grid}
             </tbody>

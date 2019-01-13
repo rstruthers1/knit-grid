@@ -4,6 +4,7 @@ const path = require('path');
 const logger = require('morgan');
 require('dotenv').config();
 const knitGridApiRouter = require('./routes/knitgrid');
+const projectApiRouter = require('./routes/project');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use('/api/knitgrid', knitGridApiRouter);
+app.use('/api/projects', projectApiRouter);
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.

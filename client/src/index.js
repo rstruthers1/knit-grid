@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './containers/App';
 import * as serviceWorker from './serviceWorker';
+import 'react-sortable-tree/style.css';
+
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
