@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import SortableTree from 'react-sortable-tree';
 import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
-import { Button, Header, Icon, Image, Menu, Segment, Sidebar } from 'semantic-ui-react';
+import { Container,  Grid  } from 'semantic-ui-react';
 
 
 import './App.css';
 import KnitGridMenu from '../components/Menu/KnitGridMenu';
 import NewProjectModal from '../components/modals/NewProjectModal';
 import OpenProjectModal from '../components/modals/OpenProjectModal';
+import KnitGridTable from '../components/KnitGridTable';
 
 class App extends Component {
 
@@ -124,7 +125,8 @@ class App extends Component {
             key: 'root',
             children: children
           }],
-          knitgrids: response.project.knitgrids
+          knitgrids: response.project.knitgrids,
+          selectedKnitgrid: null
         })
       }
       else {
@@ -139,7 +141,8 @@ class App extends Component {
               key: 'placeHolderNode'
             }]
           }],
-          knitgrids: response.project.knitgrids
+          knitgrids: response.project.knitgrids,
+          selectedKnitgrid: null
         })
       }
     })
@@ -155,7 +158,8 @@ class App extends Component {
             title: 'Error loading project',
             key: 'placeHolderNode'
           }]
-        }]
+        }],
+        selectedKnitgrid: null
       });
     });
   };
@@ -188,6 +192,9 @@ class App extends Component {
     console.log("Node selected: " + JSON.stringify(rowInfo));
     console.log("key of selected knitgrid: " + rowInfo.node.key);
     console.log("this.state.knitgrids: " + JSON.stringify(this.state.knitgrids));
+    if (!this.state.knitgrids) {
+      return;
+    }
     let selectedKnitgrid = this.state.knitgrids.find(el => {
       return el.id === rowInfo.node.key;
     });
@@ -198,10 +205,16 @@ class App extends Component {
   };
 
   render() {
-    let knitgrid = null;
+
+    let knitgridTitle = "KnitGrid";
+    let knitgridTable = null;
     if (this.state.selectedKnitgrid) {
-      knitgrid = (<pre>{JSON.stringify(this.state.selectedKnitgrid)}</pre>)
+      if (this.state.selectedKnitgrid.name) {
+        knitgridTitle = this.state.selectedKnitgrid.name;
+      }
+      knitgridTable = (<KnitGridTable knitgrid={this.state.selectedKnitgrid}/>);
     }
+
 
     return (
         <div className="App">
@@ -213,16 +226,27 @@ class App extends Component {
             <KnitGridMenu clicked={this.handleMenuSelection}/>
 
 
-              <SortableTree
-                  style={{minHeight: '500px'}}
-                  treeData={this.state.projectTreeData}
-                  onChange={treeData => this.handleProjectTreeChanged(treeData)}
-                  theme={FileExplorerTheme}
-                  canDrag={false}
-                  generateNodeProps={rowInfo => ({
-                    onClick: () => this.onSelectNode(rowInfo)
-                  })}
-              />
+            <Container style={{ padding: '0em 0em' }}>
+              <Grid  divided>
+                <Grid.Column width={4} floated='left'>
+                  <SortableTree
+                      style={{minHeight: '500px'}}
+                      treeData={this.state.projectTreeData}
+                      onChange={treeData => this.handleProjectTreeChanged(treeData)}
+                      theme={FileExplorerTheme}
+                      canDrag={false}
+                      generateNodeProps={rowInfo => ({
+                        onClick: () => this.onSelectNode(rowInfo)
+                      })}
+                  />
+
+                </Grid.Column>
+                <Grid.Column width={12}>
+                  {knitgridTitle}
+                  {knitgridTable}
+                </Grid.Column>
+              </Grid>
+            </Container>
 
 
 

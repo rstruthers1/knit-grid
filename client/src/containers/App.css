@@ -265,3 +265,7 @@ button[disabled]{
 
   margin: auto;
 }
+
+.ui.container {
+  margin-left: 5px !important;
+}
