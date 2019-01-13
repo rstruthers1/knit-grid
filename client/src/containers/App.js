@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
-import SortableTree from 'react-sortable-tree';
-import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
-import { Container,  Grid  } from 'semantic-ui-react';
-
+import {Container, Grid} from 'semantic-ui-react';
+import _ from 'lodash';
 
 import './App.css';
 import KnitGridMenu from '../components/Menu/KnitGridMenu';
 import NewProjectModal from '../components/modals/NewProjectModal';
 import OpenProjectModal from '../components/modals/OpenProjectModal';
 import KnitGridTable from '../components/KnitGridTable';
+import ProjectKnitGridList from '../components/ProjectKnitGridList';
+import {MenuItems} from '../constants/Constants';
 
 class App extends Component {
 
@@ -28,21 +28,19 @@ class App extends Component {
   };
 
   handleProjectTreeChanged = (treeData) => {
-    console.log("*** handleProjectTreeChanged");
     this.setState({
       projectTreeData: treeData
     })
   };
 
   handleMenuSelection = (whichMenuItem) => {
-    console.log("Menu selected: " + whichMenuItem);
     switch (whichMenuItem) {
-      case "NEW_PROJECT":
+      case MenuItems.NEW_PROJECT:
         this.setState({
           newProjectModalVisible: true
         });
         break;
-      case "OPEN_PROJECT":
+      case MenuItems.OPEN_PROJECT:
         this.setState({
           openProjectModalVisible: true
         });
@@ -102,7 +100,8 @@ class App extends Component {
 
       if (response.project) {
         let children = null;
-        if (response.project.knitgrids && response.project.knitgrids.length > 0) {
+        if (response.project.knitgrids && response.project.knitgrids.length
+            > 0) {
           children = response.project.knitgrids.map(knitgrid => {
             return {
               title: knitgrid.name,
@@ -188,19 +187,20 @@ class App extends Component {
     }
   };
 
-  onSelectNode = (rowInfo) => {
-    console.log("Node selected: " + JSON.stringify(rowInfo));
-    console.log("key of selected knitgrid: " + rowInfo.node.key);
-    console.log("this.state.knitgrids: " + JSON.stringify(this.state.knitgrids));
+  onSelectNode = (nodeId) => {
+
+    console.log("key of selected knitgrid: " + nodeId);
+    console.log("this.state.knitgrids: " + JSON.stringify(
+        this.state.knitgrids));
     if (!this.state.knitgrids) {
       return;
     }
     let selectedKnitgrid = this.state.knitgrids.find(el => {
-      return el.id === rowInfo.node.key;
+      return el.id === nodeId;
     });
     console.log("selectedKnitGrid: " + JSON.stringify(selectedKnitgrid));
     this.setState({
-      selectedKnitgrid: selectedKnitgrid
+      selectedKnitgrid: _.cloneDeep(selectedKnitgrid)
     })
   };
 
@@ -208,13 +208,14 @@ class App extends Component {
 
     let knitgridTitle = "KnitGrid";
     let knitgridTable = null;
+    let selectedKnitgridId = null;
     if (this.state.selectedKnitgrid) {
       if (this.state.selectedKnitgrid.name) {
         knitgridTitle = this.state.selectedKnitgrid.name;
       }
       knitgridTable = (<KnitGridTable knitgrid={this.state.selectedKnitgrid}/>);
+      selectedKnitgridId = this.state.selectedKnitgrid.id;
     }
-
 
     return (
         <div className="App">
@@ -224,31 +225,20 @@ class App extends Component {
                             closedAction={this.openProjectModalClosed}/>
           <div>
             <KnitGridMenu clicked={this.handleMenuSelection}/>
-
-
-            <Container style={{ padding: '0em 0em' }}>
-              <Grid  divided>
+            <Container style={{padding: '0em 0em'}}>
+              <Grid divided>
                 <Grid.Column width={4} floated='left'>
-                  <SortableTree
-                      style={{minHeight: '500px'}}
-                      treeData={this.state.projectTreeData}
-                      onChange={treeData => this.handleProjectTreeChanged(treeData)}
-                      theme={FileExplorerTheme}
-                      canDrag={false}
-                      generateNodeProps={rowInfo => ({
-                        onClick: () => this.onSelectNode(rowInfo)
-                      })}
-                  />
-
+                  <ProjectKnitGridList
+                      projectTreeData={this.state.projectTreeData}
+                      onSelectNode={this.onSelectNode}
+                      selectedKnitgridId={selectedKnitgridId}/>
                 </Grid.Column>
                 <Grid.Column width={12}>
-                  {knitgridTitle}
+                  <h1>{knitgridTitle}</h1>
                   {knitgridTable}
                 </Grid.Column>
               </Grid>
             </Container>
-
-
 
 
           </div>

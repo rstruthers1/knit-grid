@@ -1,7 +1,8 @@
-import React, {Component} from 'react'
-import {Dropdown, Menu} from 'semantic-ui-react'
+import React, {Component} from 'react';
+import {Dropdown, Menu} from 'semantic-ui-react';
 
-import logo from '../../assets/knitting-needles.svg'
+import logo from '../../assets/knitting-needles.svg';
+import {MenuItems} from '../../constants/Constants';
 
 export default class KnitGridMenu extends Component {
 
@@ -23,10 +24,10 @@ export default class KnitGridMenu extends Component {
           <Dropdown item text='Project'>
             <Dropdown.Menu >
               <Dropdown.Item text='New Project...'
-                             onClick={() => this.props.clicked('NEW_PROJECT')}
+                             onClick={() => this.props.clicked(MenuItems.NEW_PROJECT)}
                              />
               <Dropdown.Item text='Open Project...'
-                             onClick={() => this.props.clicked('OPEN_PROJECT')}
+                             onClick={() => this.props.clicked(MenuItems.OPEN_PROJECT)}
                              />
             </Dropdown.Menu>
           </Dropdown>

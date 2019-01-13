@@ -6,7 +6,8 @@ class KnitGridTable extends Component {
   tableCells = (row) => {
     return row.cells.map(cell => {
       if (cell.selected) {
-        return <Table.Cell selectable active><a href="#">{cell.value}</a></Table.Cell>
+        return <Table.Cell selectable active><a
+            href="#">{cell.value}</a></Table.Cell>
       } else {
         return <Table.Cell selectable><a href="#">{cell.value}</a></Table.Cell>
       }
@@ -15,13 +16,16 @@ class KnitGridTable extends Component {
 
   render() {
 
-    const tableRows = this.props.knitgrid.grid.map(row => {
+    const tableRows = this.props.knitgrid.grid.map((row, i) => {
       return (
-          <Table.Row>{this.tableCells(row)}</Table.Row>
+          <Table.Row>
+            <Table.Cell singleLine={true}>{"Row " + (i + 1)}</Table.Cell>
+            {this.tableCells(row)}
+          </Table.Row>
       )
     });
     return (
-        <Table celled selectable>
+        <Table celled selectable definition>
           <Table.Header>
 
           </Table.Header>

@@ -1,5 +1,8 @@
-export const NEW_PROJECT = "NEW_PROJECT";
-export const OPEN_PROJECT = "OPEN_PROJECT";
+export const MenuItems = {
+  NEW_PROJECT: "NEW_PROJECT",
+  OPEN_PROJECT: "OPEN_PROJECT",
+  NEW_FILE: "NEW_FILE",
+  OPEN_FILE: "OPEN_FILE"
+};
 
-export const NEW_FILE = "NEW_FILE";
-export const OPEN_FILE = "OPEN_FILE";
+
