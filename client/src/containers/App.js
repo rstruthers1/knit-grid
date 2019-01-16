@@ -24,13 +24,8 @@ class App extends Component {
       key: 'root'
     }],
     knitgrids: [],
-    selectedKnitgrid: null
-  };
-
-  handleProjectTreeChanged = (treeData) => {
-    this.setState({
-      projectTreeData: treeData
-    })
+    selectedKnitgridId: null,
+    selectedCellIds: null
   };
 
   handleMenuSelection = (whichMenuItem) => {
@@ -100,6 +95,7 @@ class App extends Component {
 
       if (response.project) {
         let children = null;
+        let selectedCellIds = [];
         if (response.project.knitgrids && response.project.knitgrids.length
             > 0) {
           children = response.project.knitgrids.map(knitgrid => {
@@ -107,6 +103,21 @@ class App extends Component {
               title: knitgrid.name,
               key: knitgrid.id
             }
+          });
+          selectedCellIds = response.project.knitgrids.map(knitgrid => {
+            let selectedCellId = null;
+            for (let row of knitgrid.grid) {
+              for (let cell of row.cells) {
+                if (cell.selected) {
+                  selectedCellId = cell.id;
+                  break;
+                }
+              }
+              if (selectedCellId) {
+                break;
+              }
+            }
+            return selectedCellId;
           })
         } else {
           children = [
@@ -125,7 +136,8 @@ class App extends Component {
             children: children
           }],
           knitgrids: response.project.knitgrids,
-          selectedKnitgrid: null
+          selectedKnitgrId: null,
+          selectedCellIds: selectedCellIds
         })
       }
       else {
@@ -140,8 +152,9 @@ class App extends Component {
               key: 'placeHolderNode'
             }]
           }],
-          knitgrids: response.project.knitgrids,
-          selectedKnitgrid: null
+          knitgrids: [],
+          selectedKnitgridId: null,
+          selectedCellIds: null
         })
       }
     })
@@ -158,14 +171,15 @@ class App extends Component {
             key: 'placeHolderNode'
           }]
         }],
-        selectedKnitgrid: null
+        knitgrids: [],
+        selectedKnitgridId: null,
+        selectedCellIds: null
       });
     });
   };
 
   newProjectModalClosed = (okSelected, newProjectName,
       newProjectDescription) => {
-
     if (okSelected) {
       this.createProject(newProjectName, newProjectDescription);
     } else {
@@ -188,33 +202,63 @@ class App extends Component {
   };
 
   onSelectNode = (nodeId) => {
-
     console.log("key of selected knitgrid: " + nodeId);
     console.log("this.state.knitgrids: " + JSON.stringify(
         this.state.knitgrids));
-    if (!this.state.knitgrids) {
-      return;
-    }
-    let selectedKnitgrid = this.state.knitgrids.find(el => {
-      return el.id === nodeId;
-    });
-    console.log("selectedKnitGrid: " + JSON.stringify(selectedKnitgrid));
     this.setState({
-      selectedKnitgrid: _.cloneDeep(selectedKnitgrid)
+      selectedKnitgridId: nodeId
     })
   };
 
-  render() {
+  cellSelected = (selectedCellId) => {
+    console.log("cell selected, id: " + selectedCellId);
+    let selectedCellIds = [...this.state.selectedCellIds];
+    selectedCellIds[this.findSelectedKnitGridIndex()] = selectedCellId;
+    this.setState({
+      selectedCellIds:selectedCellIds
+    });
+  };
 
-    let knitgridTitle = "KnitGrid";
-    let knitgridTable = null;
-    let selectedKnitgridId = null;
-    if (this.state.selectedKnitgrid) {
-      if (this.state.selectedKnitgrid.name) {
-        knitgridTitle = this.state.selectedKnitgrid.name;
+  findSelectedKnitGrid = () => {
+    if (!this.state.selectedKnitgridId) {
+      return null;
+    }
+    for (let knitgrid of this.state.knitgrids) {
+      if (knitgrid.id === this.state.selectedKnitgridId) {
+        return knitgrid;
       }
-      knitgridTable = (<KnitGridTable knitgrid={this.state.selectedKnitgrid}/>);
-      selectedKnitgridId = this.state.selectedKnitgrid.id;
+    }
+    return null;
+  };
+
+  findSelectedKnitGridIndex = () => {
+    if (!this.state.selectedKnitgridId) {
+      return null;
+    }
+    for (let i = 0; i < this.state.knitgrids.length; i++) {
+      let knitgrid = this.state.knitgrids[i];
+      if (knitgrid.id === this.state.selectedKnitgridId) {
+        return i;
+      }
+    }
+    return null;
+  };
+
+  render() {
+    let knitgridTable = null;
+    let knitgridTitle = "KnitGrid";
+    let knitgrid = this.findSelectedKnitGrid();
+    let knitgridIndex = this.findSelectedKnitGridIndex();
+
+    if (knitgrid) {
+      knitgridTable = (
+          <KnitGridTable
+              knitgrid={knitgrid}
+              selectedCellId={this.state.selectedCellIds[knitgridIndex]}
+              cellSelected={this.cellSelected}
+          />
+      );
+      knitgridTitle = knitgrid.name;
     }
 
     return (
@@ -231,7 +275,8 @@ class App extends Component {
                   <ProjectKnitGridList
                       projectTreeData={this.state.projectTreeData}
                       onSelectNode={this.onSelectNode}
-                      selectedKnitgridId={selectedKnitgridId}/>
+                      selectedKnitgridId={this.state.selectedKnitgridId}
+                  />
                 </Grid.Column>
                 <Grid.Column width={12}>
                   <h1>{knitgridTitle}</h1>
@@ -239,8 +284,6 @@ class App extends Component {
                 </Grid.Column>
               </Grid>
             </Container>
-
-
           </div>
         </div>
     )
