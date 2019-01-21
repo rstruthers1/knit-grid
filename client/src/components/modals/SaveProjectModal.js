@@ -111,11 +111,8 @@ class SaveProjectModal extends Component {
       }
     }).then(parseFetchResponse)
     .then(({json, bodyText, response}) => {
-      console.log("*** responlse.status: " + response.status);
-
       if (response.status !== 200) {
         let errorMessage = "Unknown Error";
-        console.log("json.message: " + json.message);
         if (json.message) {
           if (!json.parseError) {
             errorMessage = json.message;

@@ -5,8 +5,6 @@ import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 class KnitGridTable extends Component {
 
   currentRowLabelDropped = (e) => {
-    console.log("Dropped!");
-    console.log("I was dropped on " + e.dropData.id);
     this.props.cellSelected(e.dropData.id);
   };
 

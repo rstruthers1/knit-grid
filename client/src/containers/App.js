@@ -131,7 +131,6 @@ class App extends Component {
             }
           ]
         }
-        console.log("knitgrids: " + JSON.stringify(response.project.knitgrids));
         this.setState({
           projectId: response.project.id,
           openProjectModalVisible: false,

@@ -41,7 +41,6 @@ class KnitGrid extends Component {
       }
     })
     .catch(error => {
-      console.log("caught error: " + JSON.string(error));
       this.setState(
           {
             status: 'failure_retrieving',
