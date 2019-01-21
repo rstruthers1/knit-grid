@@ -25,6 +25,19 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
 
+function clientErrorHandler(err, req, res, next) {
+  console.log("***  clientErrorHandler ");
+  res.setHeader('Content-Type', 'application/json');
+  let statusCode = err.statusCode || 500;
+  res.status = statusCode;
+  res.json(statusCode, {
+    message: err.message,
+    error: err
+  });
+}
+
+app.use(clientErrorHandler);
+
 
 const port = process.env.PORT || 5000;
 

@@ -1,9 +1,10 @@
 // See: https://knexjs.org
 
-const knex = require('knex')(require('./knexfile'))
+const knex = require('knex')(require('./knexfile'));
+const Promise = require('bluebird');
 
 module.exports = {
-  createKnitGrid ({ friendlyId, name, grid }, cb) {
+  createKnitGrid({friendlyId, name, grid}, cb) {
     return knex('KNIT_GRID').insert({
       FRIENDLY_ID: friendlyId,
       NAME: name,
@@ -32,14 +33,14 @@ module.exports = {
   updateKnitGrid({friendlyId, grid}, cb) {
     return knex('KNIT_GRID')
     .where('FRIENDLY_ID', '=', friendlyId)
-    .update( {
+    .update({
       GRID_DATA: JSON.stringify(grid)
     })
     .then(updatedRows => cb(updatedRows, null))
     .error(reason => cb([], reason))
     .catch(error => cb([], error))
   },
-  createProject ({ name, description }, cb) {
+  createProject({name, description}, cb) {
     return knex('PROJECT').insert({
       NAME: name,
       DESCRIPTION: description
@@ -56,7 +57,8 @@ module.exports = {
     .catch(error => cb([], error))
   },
   readProjectWithIdPlusKnitGrids(projectId, cb) {
-    return knex.select('p.ID', 'p.NAME', 'p.DESCRIPTION', 'p.CREATED_AT', 'p.UPDATED_AT',
+    return knex.select('p.ID', 'p.NAME', 'p.DESCRIPTION', 'p.CREATED_AT',
+        'p.UPDATED_AT',
         'k.ID as KNIT_GRID_ID',
         'k.NAME as KNIT_GRID_NAME',
         'k.GRID_DATA')
@@ -66,6 +68,32 @@ module.exports = {
     .then(rows => cb(rows, null))
     .error(reason => cb([], reason))
     .catch(error => cb([], error))
+  },
+  saveProjectKnitGrids(projectId, knitgrids, cb) {
+    knex.transaction(async function (trx) {
+      for (let i = 0; i < knitgrids.length; i++) {
+        let knitgrid = knitgrids[i];
+        await trx.where("PROJECT_ID", projectId)
+        .andWhere("ID", knitgrid.id)
+        .update({
+          GRID_DATA: JSON.stringify(knitgrid.grid)
+        })
+        .into("KNIT_GRID")
+      }
+    })
+    .then(() => {
+      console.log('Transaction was executed and committed correctly!');
+      cb([]);
+    })
+    .error(reason => {
+      console.log("error, reason: " + reason.message);
+      cb([], reason)
+    })
+    .catch(err => {
+      console.log('Transaction failed:', err.message);
+      cb([], err);
+    })
+
   }
 }
 

@@ -25,7 +25,6 @@ class OpenProjectModal extends Component {
 
   static getDerivedStateFromProps(props, state) {
     if (!props.visible && !isEqual(state, initialState)) {
-      console.log("Initializing state");
       return {
         ...initialState
       };
@@ -36,15 +35,12 @@ class OpenProjectModal extends Component {
 
   componentDidUpdate(prevProps) {
     // Typical usage (don't forget to compare props):
-    console.log("componentDidUpdate");
     if (this.props.visible && !prevProps.visible) {
-      console.log("calling fetchProjects");
       this.fetchProjects();
     }
   }
 
   fetchProjects = () => {
-    console.log("*** fetching projects");
     fetch('/api/projects', {
       method: 'GET',
       Accept: 'application/json'
@@ -77,7 +73,6 @@ class OpenProjectModal extends Component {
     const {name, value} = result;
     const projectId = value;
     const projectName = name;
-    console.log("projectNameSelectedHandler, projectId: " + projectId);
 
     this.setState({
       projectId: projectId,
@@ -93,7 +88,6 @@ class OpenProjectModal extends Component {
 
   okAction = () => {
     if (!this.state.projectId) {
-      console.log("*** ok - this.state.projectId is not set");
       this.setState({
         projectNameError: true,
         projectNamePlaceHolder: 'Please select a project'
@@ -107,7 +101,6 @@ class OpenProjectModal extends Component {
     const formFieldStyle = {
       width: '300px'
     };
-    console.log("render, options: " + JSON.stringify(this.state.options));
 
     return (
         <Modal size='large' dimmer='inverted' open={this.props.visible}

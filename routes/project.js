@@ -99,10 +99,24 @@ router.put('/', (req, res) => {
     }
 
     let message = JSON.stringify(result);
-    if (result == 1) {
+    if (result === 1) {
       message += " project created"
     }
     res.send(JSON.stringify({message: message}))
+  })
+});
+
+router.post('/:projectId', (req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+  console.log("projectId: " + req.params.projectId);
+  store.saveProjectKnitGrids(req.params.projectId, req.body.knitgrids, (data, error) => {
+    if (error) {
+      console.log("*** error: " + error);
+      res.send(JSON.stringify({error: error}));
+      return;
+    }
+    console.log("*** Success!");
+    res.send(JSON.stringify({message: "success"}))
   })
 });
 

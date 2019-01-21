@@ -1,23 +1,25 @@
 import React, {Component} from 'react';
-import {Container, Grid} from 'semantic-ui-react';
-import _ from 'lodash';
+import {
+  Container,
+  Grid
+} from 'semantic-ui-react';
 
 import './App.css';
 import KnitGridMenu from '../components/Menu/KnitGridMenu';
 import NewProjectModal from '../components/modals/NewProjectModal';
 import OpenProjectModal from '../components/modals/OpenProjectModal';
+import SaveProjectModal from '../components/modals/SaveProjectModal';
 import KnitGridTable from '../components/KnitGridTable';
 import ProjectKnitGridList from '../components/ProjectKnitGridList';
-import {MenuItems} from '../constants/Constants';
+import {MenuItemIds} from '../constants/Constants';
 
 class App extends Component {
 
   state = {
-    data: null,
-    projectName: "",
-    projectDescription: "",
+    projectId: null,
     newProjectModalVisible: false,
     openProjectModalVisible: false,
+    saveProjectModalVisible: false,
     projectTreeData: [{
       title: 'Create or open a project',
       expanded: true,
@@ -30,14 +32,19 @@ class App extends Component {
 
   handleMenuSelection = (whichMenuItem) => {
     switch (whichMenuItem) {
-      case MenuItems.NEW_PROJECT:
+      case MenuItemIds.NEW_PROJECT:
         this.setState({
           newProjectModalVisible: true
         });
         break;
-      case MenuItems.OPEN_PROJECT:
+      case MenuItemIds.OPEN_PROJECT:
         this.setState({
           openProjectModalVisible: true
+        });
+        break;
+      case MenuItemIds.SAVE_PROJECT:
+        this.setState({
+          saveProjectModalVisible: true
         });
         break;
       default:
@@ -83,7 +90,6 @@ class App extends Component {
   };
 
   fetchProject = (id, projectName) => {
-    console.log('URL: /api/projects/' + id);
     fetch('/api/projects/' + id, {
       method: 'GET',
       headers: {
@@ -91,8 +97,6 @@ class App extends Component {
       }
     }).then(res => res.json())
     .then(response => {
-      console.log("*** project: " + JSON.stringify(response.project));
-
       if (response.project) {
         let children = null;
         let selectedCellIds = [];
@@ -127,7 +131,9 @@ class App extends Component {
             }
           ]
         }
+        console.log("knitgrids: " + JSON.stringify(response.project.knitgrids));
         this.setState({
+          projectId: response.project.id,
           openProjectModalVisible: false,
           projectTreeData: [{
             title: response.project.name,
@@ -191,8 +197,6 @@ class App extends Component {
 
   openProjectModalClosed = (okSelected, projectId, projectName) => {
     if (okSelected) {
-      console.log("*** projectId: " + projectId);
-      console.log("*** projectName: " + projectName);
       this.fetchProject(projectId, projectName);
     } else {
       this.setState({
@@ -201,21 +205,29 @@ class App extends Component {
     }
   };
 
+  saveProjectModalClosed = (status) => {
+    this.setState({
+      saveProjectModalVisible: false
+    });
+  };
+
+  projectSaved = (knitgrids) => {
+    this.setState({
+      knitgrids: knitgrids
+    })
+  }
+
   onSelectNode = (nodeId) => {
-    console.log("key of selected knitgrid: " + nodeId);
-    console.log("this.state.knitgrids: " + JSON.stringify(
-        this.state.knitgrids));
     this.setState({
       selectedKnitgridId: nodeId
     })
   };
 
   cellSelected = (selectedCellId) => {
-    console.log("cell selected, id: " + selectedCellId);
     let selectedCellIds = [...this.state.selectedCellIds];
     selectedCellIds[this.findSelectedKnitGridIndex()] = selectedCellId;
     this.setState({
-      selectedCellIds:selectedCellIds
+      selectedCellIds: selectedCellIds
     });
   };
 
@@ -223,6 +235,11 @@ class App extends Component {
     if (!this.state.selectedKnitgridId) {
       return null;
     }
+
+    if (!this.state.knitgrids) {
+      return null;
+    }
+
     for (let knitgrid of this.state.knitgrids) {
       if (knitgrid.id === this.state.selectedKnitgridId) {
         return knitgrid;
@@ -235,6 +252,11 @@ class App extends Component {
     if (!this.state.selectedKnitgridId) {
       return null;
     }
+
+    if (!this.state.knitgrids) {
+      return null;
+    }
+
     for (let i = 0; i < this.state.knitgrids.length; i++) {
       let knitgrid = this.state.knitgrids[i];
       if (knitgrid.id === this.state.selectedKnitgridId) {
@@ -267,6 +289,14 @@ class App extends Component {
                            closedAction={this.newProjectModalClosed}/>
           <OpenProjectModal visible={this.state.openProjectModalVisible}
                             closedAction={this.openProjectModalClosed}/>
+          <SaveProjectModal visible={this.state.saveProjectModalVisible}
+                            closedAction={this.saveProjectModalClosed}
+                            knitgrids={this.state.knitgrids}
+                            selectedCellIds={this.state.selectedCellIds}
+                            projectId={this.state.projectId}
+                            projectSaved={this.projectSaved}
+          />
+
           <div>
             <KnitGridMenu clicked={this.handleMenuSelection}/>
             <Container style={{padding: '0em 0em'}}>

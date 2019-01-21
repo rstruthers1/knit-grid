@@ -1,8 +1,7 @@
-export const MenuItems = {
+export const MenuItemIds = {
   NEW_PROJECT: "NEW_PROJECT",
   OPEN_PROJECT: "OPEN_PROJECT",
-  NEW_FILE: "NEW_FILE",
-  OPEN_FILE: "OPEN_FILE"
+  SAVE_PROJECT: "SAVE_PROJECT"
 };
 
 
