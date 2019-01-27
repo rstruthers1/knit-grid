@@ -46,7 +46,6 @@ class KnitGridTable extends Component {
                    }}>{draggableLabel}{cell.value}</div>
             </DropTarget>
           </Table.Cell>
-
       )
     })
   };
@@ -57,12 +56,7 @@ class KnitGridTable extends Component {
     });
   };
 
-  componentDidMount = () => {
-    console.log("[KnitGridTable]: componentDidMount");
-  }
-
   render() {
-
     console.log("[KnitGridTable]: render");
     const tableRows = this.props.knitgrid.grid.map((row, i) => {
       let label = null;
