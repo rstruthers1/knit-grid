@@ -13,7 +13,7 @@ const parseFetchResponse = response =>
     .then(text => {
       let json = null;
       try {
-        let json = JSON.parse(text);
+        json = JSON.parse(text);
       } catch (err) {
         json = {};
         json.message = "Unable to parse response body.";
@@ -38,7 +38,6 @@ const parseFetchResponse = response =>
     });
 
 const initialState = {
-  saveStatus: null,
   okButtonDisabled: true,
   dialogHeader: "Saving Project",
   progressMessage: "Saving...",
@@ -77,8 +76,16 @@ class SaveProjectModal extends Component {
     if (!this.props.projectId ||
         !this.props.knitgrids ||
         !this.props.selectedCellIds) {
+      let dialogHeader = "No current project to save";
+      if (this.props.projectId) {
+        if (!this.props.knitgrids) {
+          dialogHeader = "Please add files before saving this project"
+        } else {
+          dialogHeader = "No grid cells selected"
+        }
+      }
       this.setState({
-        dialogHeader: "No current project to save",
+        dialogHeader: dialogHeader,
         progressMessage: "Not saving",
         okButtonDisabled: false,
         progressBarActive: false,
@@ -151,7 +158,7 @@ class SaveProjectModal extends Component {
   };
 
   okAction = () => {
-    this.props.closedAction(this.state.saveStatus);
+    this.props.closedAction();
   };
 
   render() {

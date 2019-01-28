@@ -3,6 +3,7 @@ import {
   Container,
   Grid
 } from 'semantic-ui-react';
+import _ from 'lodash';
 
 import './App.css';
 import KnitGridMenu from '../components/Menu/KnitGridMenu';
@@ -27,7 +28,8 @@ class App extends Component {
     }],
     knitgrids: [],
     selectedKnitgridId: null,
-    selectedCellIds: null
+    selectedCellIds: null,
+    lastSavedSelectedCellIds: null
   };
 
   handleMenuSelection = (whichMenuItem) => {
@@ -141,8 +143,9 @@ class App extends Component {
             children: children
           }],
           knitgrids: response.project.knitgrids,
-          selectedKnitgrId: null,
-          selectedCellIds: selectedCellIds
+          selectedKnitgridId: null,
+          selectedCellIds: selectedCellIds,
+          lastSavedSelectedCellIds: [...selectedCellIds]
         })
       }
       else {
@@ -159,7 +162,8 @@ class App extends Component {
           }],
           knitgrids: [],
           selectedKnitgridId: null,
-          selectedCellIds: null
+          selectedCellIds: null,
+          lastSavedSelectedCellIds: null
         })
       }
     })
@@ -178,7 +182,8 @@ class App extends Component {
         }],
         knitgrids: [],
         selectedKnitgridId: null,
-        selectedCellIds: null
+        selectedCellIds: null,
+        lastSavedSelectedCellIds: null
       });
     });
   };
@@ -204,17 +209,28 @@ class App extends Component {
     }
   };
 
-  saveProjectModalClosed = (status) => {
+  saveProjectModalClosed = () => {
     this.setState({
       saveProjectModalVisible: false
     });
   };
 
   projectSaved = (knitgrids) => {
+    const lastSavedSelectedCellIds = [...this.state.selectedCellIds];
+    const projectTreeData = _.cloneDeep(this.state.projectTreeData);
+    projectTreeData[0].children = this.state.knitgrids.map((knitgrid, i) => {
+      let title = knitgrid.name;
+      return {
+        title: title,
+        key: knitgrid.id
+      }
+    });
     this.setState({
-      knitgrids: knitgrids
-    })
-  }
+      knitgrids: knitgrids,
+      lastSavedSelectedCellIds: lastSavedSelectedCellIds,
+      projectTreeData: projectTreeData
+    });
+  };
 
   onSelectNode = (nodeId) => {
     this.setState({
@@ -223,10 +239,23 @@ class App extends Component {
   };
 
   cellSelected = (selectedCellId) => {
-    let selectedCellIds = [...this.state.selectedCellIds];
+    const selectedCellIds = [...this.state.selectedCellIds];
     selectedCellIds[this.findSelectedKnitGridIndex()] = selectedCellId;
+
+    const projectTreeData = _.cloneDeep(this.state.projectTreeData);
+    projectTreeData[0].children = this.state.knitgrids.map((knitgrid, i) => {
+      let title = knitgrid.name;
+      if (selectedCellIds[i] !== this.state.lastSavedSelectedCellIds[i]) {
+        title += " *";
+      }
+      return {
+        title: title,
+        key: knitgrid.id
+      }
+    });
     this.setState({
-      selectedCellIds: selectedCellIds
+      selectedCellIds: selectedCellIds,
+      projectTreeData: projectTreeData
     });
   };
 
@@ -293,8 +322,7 @@ class App extends Component {
                             knitgrids={this.state.knitgrids}
                             selectedCellIds={this.state.selectedCellIds}
                             projectId={this.state.projectId}
-                            projectSaved={this.projectSaved}
-          />
+                            projectSaved={this.projectSaved}/>
 
           <div>
             <KnitGridMenu clicked={this.handleMenuSelection}/>
