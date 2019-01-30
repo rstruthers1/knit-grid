@@ -21,7 +21,8 @@ class ProjectKnitGridList extends Component {
                        key={knitgridItem.key + ""}
                        id={knitgridItem.key}
                        onClick={(event, data) => this.handleClick(event, data)}
-                       active={knitgridItem.key === this.props.selectedKnitgridId}>
+                       active={knitgridItem.key
+                       === this.props.selectedKnitgridId}>
               <List.Icon name='file'/>
               <List.Content>
                 <List.Header as='a'>{knitgridItem.title}</List.Header>
@@ -32,17 +33,19 @@ class ProjectKnitGridList extends Component {
     }
 
     return (
-        <List>
-          <List.Item>
-            <List.Icon name='folder'/>
-            <List.Content>
-              <List.Header>{parentNode.title}</List.Header>
-              <List selection>
-                {listItems}
-              </List>
-            </List.Content>
-          </List.Item>
-        </List>
+
+          <List>
+            <List.Item>
+              <List.Icon name='folder'/>
+              <List.Content>
+                <List.Header>{parentNode.title}</List.Header>
+                <List selection>
+                  {listItems}
+                </List>
+              </List.Content>
+            </List.Item>
+          </List>
+
     )
   }
 }

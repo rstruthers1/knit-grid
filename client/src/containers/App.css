@@ -285,3 +285,8 @@ button[disabled] {
   position: relative !important;
   display: inline-block !important;
 }
+
+.tree {
+ width: 200px;  position: fixed; left: 1em; top: 5em;
+  overflow-x: hidden;
+}

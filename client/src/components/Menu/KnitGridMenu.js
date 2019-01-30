@@ -12,7 +12,7 @@ export default class KnitGridMenu extends Component {
     }
 
     return (
-        <Menu>
+        <Menu className="top fixed">
 
           <Menu.Item style={homeMenuStyle}>
             <img src={logo} className="App-logo" alt="logo" width="40px"

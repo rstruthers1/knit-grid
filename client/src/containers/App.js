@@ -325,15 +325,19 @@ class App extends Component {
                             projectSaved={this.projectSaved}/>
 
           <div>
+
             <KnitGridMenu clicked={this.handleMenuSelection}/>
-            <Container style={{padding: '0em 0em'}}>
+
+            <Container style={{padding: '5em 0em'}}>
               <Grid divided>
                 <Grid.Column width={4} floated='left'>
+                  <div className="tree">
                   <ProjectKnitGridList
                       projectTreeData={this.state.projectTreeData}
                       onSelectNode={this.onSelectNode}
                       selectedKnitgridId={this.state.selectedKnitgridId}
                   />
+                  </div>
                 </Grid.Column>
                 <Grid.Column width={12}>
                   <h1>{knitgridTitle}</h1>
