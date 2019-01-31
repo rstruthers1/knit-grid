@@ -4,6 +4,94 @@ import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 
 class KnitGridTable extends Component {
 
+  componentDidMount() {
+    document.addEventListener("keypress", this.navigateWithKeyboard, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keypress", this.navigateWithKeyboard, false);
+  }
+
+  navigateWithKeyboard = (event) => {
+    const keyChar = String.fromCharCode(event.keyCode);
+    console.log("keypress event detected, key is: " + keyChar);
+    switch (keyChar) {
+      case "n":
+        console.log("navigating to next cell");
+        this.goToNextCell();
+        break;
+      case "b":
+        console.log("navigating to previous cell");
+        this.goToPreviousCell();
+        break;
+      default:
+        console.log("key not registered");
+    }
+  };
+
+  goToNextCell = () => {
+    const grid = this.props.knitgrid.grid;
+    let nextRowIndex = -1;
+    let nextColumnIndex = -1;
+
+    for (let i = 0; i < grid.length; i++) {
+      const row = grid[i];
+      for (let j = 0; j < row.cells.length; j++) {
+        const cell = row.cells[j];
+        if (cell.id === this.props.selectedCellId) {
+
+          nextRowIndex = i;
+          nextColumnIndex = j + 1;
+          if (nextColumnIndex === row.cells.length) {
+            nextColumnIndex = 0;
+            nextRowIndex = i + 1;
+            if (nextRowIndex === grid.length) {
+              nextRowIndex = 0;
+            }
+          }
+          break;
+        }
+      }
+      if (nextRowIndex >= 0) {
+        break;
+      }
+    }
+    if (nextRowIndex >= 0 && nextColumnIndex >= 0) {
+      this.props.cellSelected(grid[nextRowIndex].cells[nextColumnIndex].id);
+    }
+  };
+
+  goToPreviousCell = () => {
+    const grid = this.props.knitgrid.grid;
+    let nextRowIndex = -1;
+    let nextColumnIndex = -1;
+
+    for (let i = 0; i < grid.length; i++) {
+      const row = grid[i];
+      for (let j = 0; j < row.cells.length; j++) {
+        const cell = row.cells[j];
+        if (cell.id === this.props.selectedCellId) {
+          nextRowIndex = i;
+          nextColumnIndex = j - 1;
+          if (nextColumnIndex < 0) {
+            nextRowIndex = i - 1;
+            if (nextRowIndex < 0) {
+              nextRowIndex = grid.length - 1;
+            }
+            nextColumnIndex = grid[nextRowIndex].cells.length - 1;
+          }
+          break;
+        }
+      }
+      if (nextRowIndex >= 0) {
+        break;
+      }
+    }
+    if (nextRowIndex >= 0 && nextColumnIndex >= 0) {
+      this.props.cellSelected(grid[nextRowIndex].cells[nextColumnIndex].id);
+    }
+  };
+
   currentRowLabelDropped = (e) => {
     this.props.cellSelected(e.dropData.id);
   };
@@ -24,7 +112,7 @@ class KnitGridTable extends Component {
           <Table.Cell selectable
                       active={cell.id === this.props.selectedCellId}
                       key={cell.id}
-          style={{height: "1px"}}>
+                      style={{height: "1px"}}>
 
 
             <DropTarget targetKey="currentRow"
