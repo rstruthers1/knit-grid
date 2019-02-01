@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Table, Label} from 'semantic-ui-react';
+import {Table, Label, Input} from 'semantic-ui-react';
 import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 
 
@@ -107,7 +107,15 @@ class KnitGridTable extends Component {
             <DragDropContainer
                 targetKey="currentRow"
                 onDrop={this.currentRowLabelDropped}>
-              <Label color="green"><input type="hidden"/></Label>
+              <Label color="green">
+                <div className="ui focus transparent input">
+                  <input type="text" style={{
+                      width: "1em",
+                      height: "1em",
+                      cursor: "all-scroll"
+                  }}/>
+                </div>
+              </Label>
             </DragDropContainer>)
       }
       return (
