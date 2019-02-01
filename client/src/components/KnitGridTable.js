@@ -14,10 +14,18 @@ class KnitGridTable extends Component {
     document.removeEventListener("keypress", this.navigateWithKeyboard, false);
   }
 
+  handleMarkerInputChange = (event) => {
+    this.processNavigationInput(event.target.value);
+  };
+
 
   navigateWithKeyboard = (event) => {
     const keyChar = String.fromCharCode(event.keyCode);
     console.log("keypress event detected, key is: " + keyChar);
+    this.processNavigationInput(keyChar);
+  };
+
+  processNavigationInput = (keyChar) => {
     switch (keyChar) {
       case "n":
         console.log("navigating to next cell");
@@ -30,7 +38,7 @@ class KnitGridTable extends Component {
       default:
         console.log("key not registered");
     }
-  };
+  }
 
   goToNextCell = () => {
     const grid = this.props.knitgrid.grid;
@@ -109,7 +117,9 @@ class KnitGridTable extends Component {
                 onDrop={this.currentRowLabelDropped}>
               <Label color="green">
                 <div className="ui focus transparent input">
-                  <input type="text" style={{
+                  <input type="text"
+                         onChange={this.handleMarkerInputChange}
+                         style={{
                       width: "1em",
                       height: "1em",
                       cursor: "all-scroll"
