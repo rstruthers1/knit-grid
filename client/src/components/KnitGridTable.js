@@ -26,6 +26,7 @@ class KnitGridTable extends Component {
   };
 
   processNavigationInput = (keyChar) => {
+    keyChar = keyChar.toLowerCase();
     switch (keyChar) {
       case "n":
         console.log("navigating to next cell");
