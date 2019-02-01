@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Table, Label, Input} from 'semantic-ui-react';
 import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 
-
 class KnitGridTable extends Component {
 
   componentDidMount() {
@@ -28,11 +27,9 @@ class KnitGridTable extends Component {
     }
   }
 
-
   handleMarkerInputChange = (event) => {
     this.processNavigationInput(event.target.value);
   };
-
 
   navigateWithKeyboard = (event) => {
     const keyChar = String.fromCharCode(event.keyCode);
@@ -162,14 +159,14 @@ class KnitGridTable extends Component {
                 targetKey="currentRow"
                 onDrop={this.currentRowLabelDropped}>
               <Label color="green">
-                <div className="ui focus transparent input"  id="dragLabel">
+                <div className="ui focus transparent input" id="dragLabel">
                   <input type="text"
                          onChange={this.handleMarkerInputChange}
                          style={{
-                      width: "1em",
-                      height: "1em",
-                      cursor: "all-scroll"
-                  }}/>
+                           width: "1em",
+                           height: "1em",
+                           cursor: "all-scroll"
+                         }}/>
                 </div>
               </Label>
             </DragDropContainer>)
@@ -230,9 +227,9 @@ class KnitGridTable extends Component {
     });
 
     return (
-        <div className="wrapper" id="gridWrapper">
+        <div className="wrapper">
           <Table celled selectable definition unstackable
-          style={{paddingLeft: "10px"}} id="gridTable">
+                 style={{paddingLeft: "10px"}}>
             <Table.Header>
             </Table.Header>
             <Table.Body>

@@ -328,15 +328,20 @@ class App extends Component {
 
             <KnitGridMenu clicked={this.handleMenuSelection}/>
 
-            <Container style={{padding: '5em 0em'}}>
+            <div style={{
+              paddingTop: "5em",
+              paddingBottom: "0em",
+              paddingLeft: "1em",
+              paddingRight: "0em"
+            }}>
               <Grid divided>
                 <Grid.Column width={4} floated='left'>
                   <div className="tree">
-                  <ProjectKnitGridList
-                      projectTreeData={this.state.projectTreeData}
-                      onSelectNode={this.onSelectNode}
-                      selectedKnitgridId={this.state.selectedKnitgridId}
-                  />
+                    <ProjectKnitGridList
+                        projectTreeData={this.state.projectTreeData}
+                        onSelectNode={this.onSelectNode}
+                        selectedKnitgridId={this.state.selectedKnitgridId}
+                    />
                   </div>
                 </Grid.Column>
                 <Grid.Column width={12}>
@@ -344,7 +349,7 @@ class App extends Component {
                   {knitgridTable}
                 </Grid.Column>
               </Grid>
-            </Container>
+            </div>
           </div>
         </div>
     )
