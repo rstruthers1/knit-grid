@@ -4,10 +4,16 @@ import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 
 
 class KnitGridTable extends Component {
-
-
+  
   componentDidMount() {
     document.addEventListener("keypress", this.navigateWithKeyboard, false);
+    const el = document.getElementById('dragLabel');
+    el.scrollIntoView();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const el = document.getElementById('dragLabel');
+    el.scrollIntoView();
   }
 
   componentWillUnmount() {
@@ -147,7 +153,7 @@ class KnitGridTable extends Component {
                 targetKey="currentRow"
                 onDrop={this.currentRowLabelDropped}>
               <Label color="green">
-                <div className="ui focus transparent input">
+                <div className="ui focus transparent input"  id="dragLabel">
                   <input type="text"
                          onChange={this.handleMarkerInputChange}
                          style={{
