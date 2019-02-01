@@ -4,21 +4,30 @@ import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 
 
 class KnitGridTable extends Component {
-  
+
   componentDidMount() {
     document.addEventListener("keypress", this.navigateWithKeyboard, false);
-    const el = document.getElementById('dragLabel');
-    el.scrollIntoView();
+    this.scrollDragLabelIntoView();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const el = document.getElementById('dragLabel');
-    el.scrollIntoView();
+    this.scrollDragLabelIntoView();
   }
 
   componentWillUnmount() {
     document.removeEventListener("keypress", this.navigateWithKeyboard, false);
   }
+
+  scrollDragLabelIntoView() {
+    const el = document.getElementById('dragLabel');
+    el.scrollIntoView();
+    const scrolledY = window.scrollY;
+
+    if (scrolledY) {
+      window.scroll(0, scrolledY - 70);
+    }
+  }
+
 
   handleMarkerInputChange = (event) => {
     this.processNavigationInput(event.target.value);
@@ -221,9 +230,9 @@ class KnitGridTable extends Component {
     });
 
     return (
-        <div className="wrapper">
+        <div className="wrapper" id="gridWrapper">
           <Table celled selectable definition unstackable
-          style={{paddingLeft: "10px"}}>
+          style={{paddingLeft: "10px"}} id="gridTable">
             <Table.Header>
             </Table.Header>
             <Table.Body>
