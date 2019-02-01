@@ -2,7 +2,9 @@ import React, {Component} from 'react';
 import {Table, Label} from 'semantic-ui-react';
 import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 
+
 class KnitGridTable extends Component {
+
 
   componentDidMount() {
     document.addEventListener("keypress", this.navigateWithKeyboard, false);
@@ -11,6 +13,7 @@ class KnitGridTable extends Component {
   componentWillUnmount() {
     document.removeEventListener("keypress", this.navigateWithKeyboard, false);
   }
+
 
   navigateWithKeyboard = (event) => {
     const keyChar = String.fromCharCode(event.keyCode);
@@ -104,7 +107,7 @@ class KnitGridTable extends Component {
             <DragDropContainer
                 targetKey="currentRow"
                 onDrop={this.currentRowLabelDropped}>
-              <Label color="green"></Label>
+              <Label color="green"><input type="hidden"/></Label>
             </DragDropContainer>)
       }
       return (
@@ -164,7 +167,8 @@ class KnitGridTable extends Component {
 
     return (
         <div className="wrapper">
-          <Table celled selectable definition unstackable>
+          <Table celled selectable definition unstackable
+          style={{paddingLeft: "10px"}}>
             <Table.Header>
             </Table.Header>
             <Table.Body>
