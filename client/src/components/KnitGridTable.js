@@ -36,10 +36,41 @@ class KnitGridTable extends Component {
         console.log("navigating to previous cell");
         this.goToPreviousCell();
         break;
+      case "z":
+        console.log("navigating to first cell in next row");
+        this.goToFirstCellInNextRow();
+        break;
       default:
         console.log("key not registered");
     }
-  }
+  };
+
+  goToFirstCellInNextRow = () => {
+    const grid = this.props.knitgrid.grid;
+    let nextRowIndex = -1;
+    let nextColumnIndex = -1;
+
+    for (let i = 0; i < grid.length; i++) {
+      const row = grid[i];
+      for (let j = 0; j < row.cells.length; j++) {
+        const cell = row.cells[j];
+        if (cell.id === this.props.selectedCellId) {
+          nextRowIndex = i + 1;
+          if (nextRowIndex === grid.length) {
+            nextRowIndex = 0;
+          }
+          nextColumnIndex = 0;
+          break;
+        }
+      }
+      if (nextRowIndex >= 0) {
+        break;
+      }
+    }
+    if (nextRowIndex >= 0 && nextColumnIndex >= 0) {
+      this.props.cellSelected(grid[nextRowIndex].cells[nextColumnIndex].id);
+    }
+  };
 
   goToNextCell = () => {
     const grid = this.props.knitgrid.grid;
@@ -51,7 +82,6 @@ class KnitGridTable extends Component {
       for (let j = 0; j < row.cells.length; j++) {
         const cell = row.cells[j];
         if (cell.id === this.props.selectedCellId) {
-
           nextRowIndex = i;
           nextColumnIndex = j + 1;
           if (nextColumnIndex === row.cells.length) {
