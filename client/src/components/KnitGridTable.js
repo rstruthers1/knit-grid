@@ -163,8 +163,8 @@ class KnitGridTable extends Component {
     });
 
     return (
-        <div>
-          <Table celled selectable definition stackable>
+        <div className="wrapper">
+          <Table celled selectable definition unstackable>
             <Table.Header>
             </Table.Header>
             <Table.Body>
