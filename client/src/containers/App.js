@@ -1,8 +1,5 @@
 import React, {Component} from 'react';
-import {
-  Container,
-  Grid
-} from 'semantic-ui-react';
+import {Grid} from 'semantic-ui-react';
 import _ from 'lodash';
 
 import './App.css';
@@ -10,6 +7,7 @@ import KnitGridMenu from '../components/Menu/KnitGridMenu';
 import NewProjectModal from '../components/modals/NewProjectModal';
 import OpenProjectModal from '../components/modals/OpenProjectModal';
 import SaveProjectModal from '../components/modals/SaveProjectModal';
+import NewKnitgridModal from '../components/modals/NewKnitgridModal';
 import KnitGridTable from '../components/KnitGridTable';
 import ProjectKnitGridList from '../components/ProjectKnitGridList';
 import {MenuItemIds} from '../constants/Constants';
@@ -21,6 +19,7 @@ class App extends Component {
     newProjectModalVisible: false,
     openProjectModalVisible: false,
     saveProjectModalVisible: false,
+    newKnitgridModalVisible: false,
     projectTreeData: [{
       title: 'Create or open a project',
       expanded: true,
@@ -47,6 +46,11 @@ class App extends Component {
       case MenuItemIds.SAVE_PROJECT:
         this.setState({
           saveProjectModalVisible: true
+        });
+        break;
+      case MenuItemIds.ADD_KNITGRID_TO_PROJECT:
+        this.setState({
+          newKnitgridModalVisible: true
         });
         break;
       default:
@@ -78,7 +82,7 @@ class App extends Component {
     .then(response => {
       this.setState({
         newProjectModalVisible: false,
-        projectName: projectName,
+        name: projectName,
         projectDescription: description,
         projectTreeData: newProjectTreeData
       })
@@ -215,6 +219,12 @@ class App extends Component {
     });
   };
 
+  newKnitgridModalClosed = () => {
+    this.setState({
+      newKnitgridModalVisible: false,
+    })
+  };
+
   projectSaved = (knitgrids) => {
     const lastSavedSelectedCellIds = [...this.state.selectedCellIds];
     const projectTreeData = _.cloneDeep(this.state.projectTreeData);
@@ -301,10 +311,16 @@ class App extends Component {
     let knitgridIndex = this.findSelectedKnitGridIndex();
 
     if (knitgrid) {
+      let lastSavedSelectedCellId = null;
+      if (this.state.lastSavedSelectedCellIds &&
+          knitgridIndex < this.state.lastSavedSelectedCellIds.length) {
+        lastSavedSelectedCellId = this.state.lastSavedSelectedCellIds[knitgridIndex];
+      }
       knitgridTable = (
           <KnitGridTable
               knitgrid={knitgrid}
               selectedCellId={this.state.selectedCellIds[knitgridIndex]}
+              lastSavedSelectedCellId={lastSavedSelectedCellId}
               cellSelected={this.cellSelected}
           />
       );
@@ -323,6 +339,8 @@ class App extends Component {
                             selectedCellIds={this.state.selectedCellIds}
                             projectId={this.state.projectId}
                             projectSaved={this.projectSaved}/>
+          <NewKnitgridModal visible={this.state.newKnitgridModalVisible}
+                           closedAction={this.newKnitgridModalClosed}/>
 
           <div>
 

@@ -33,6 +33,13 @@ export default class KnitGridMenu extends Component {
               />
             </Dropdown.Menu>
           </Dropdown>
+          {/*<Dropdown item text='KnitGrid'>*/}
+            {/*<Dropdown.Menu >*/}
+              {/*<Dropdown.Item text='Add KnitGrid to Project...'*/}
+                             {/*onClick={() => this.props.clicked(MenuItemIds.ADD_KNITGRID_TO_PROJECT)}*/}
+              {/*/>*/}
+            {/*</Dropdown.Menu>*/}
+          {/*</Dropdown>*/}
         </Menu>
     )
   }

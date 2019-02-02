@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Table, Label, Input} from 'semantic-ui-react';
+import {Table, Label, Icon} from 'semantic-ui-react';
 import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 
 class KnitGridTable extends Component {
@@ -153,6 +153,7 @@ class KnitGridTable extends Component {
   rowCells = (row) => {
     return row.cells.map(cell => {
       let draggableLabel = null;
+      let lastSavedMarkerPositionLabel = null;
       if (cell.id === this.props.selectedCellId) {
         draggableLabel = (
             <DragDropContainer
@@ -170,6 +171,12 @@ class KnitGridTable extends Component {
                 </div>
               </Label>
             </DragDropContainer>)
+      } else if (cell.id === this.props.lastSavedSelectedCellId) {
+        lastSavedMarkerPositionLabel = (
+            <Label color="grey">
+              <Icon name="asterisk"/>
+            </Label>
+        )
       }
       return (
 
@@ -195,7 +202,7 @@ class KnitGridTable extends Component {
                      position: "relative",
                      minWidth: "50px",
                      display: "inline-block"
-                   }}>{draggableLabel}{cell.value}</div>
+                   }}>{draggableLabel}{lastSavedMarkerPositionLabel}{cell.value}</div>
             </DropTarget>
           </Table.Cell>
       )

@@ -10,10 +10,10 @@ import '../../containers/App.css';
 
 const initialState = {
   projectId: null,
-  projectName: null,
+  name: null,
   options: [],
-  projectNameError: false,
-  projectNamePlaceHolder: 'Loading Projects...',
+  nameError: false,
+  namePlaceHolder: 'Loading Projects...',
   dataStatus: 'loading'
 };
 
@@ -56,14 +56,14 @@ class OpenProjectModal extends Component {
       });
       this.setState({
         options: options,
-        projectNamePlaceHolder: 'Project Name',
+        namePlaceHolder: 'Project Name',
         dataStatus: 'loaded'
       })
     })
     .catch(error => {
       console.error('Error:', error);
       this.setState({
-        projectNamePlaceHolder: 'Error loading projects.',
+        namePlaceHolder: 'Error loading projects.',
         dataStatus: 'error'
       })
     });
@@ -76,9 +76,9 @@ class OpenProjectModal extends Component {
 
     this.setState({
       projectId: projectId,
-      projectName: projectName,
-      projectNameError: false,
-      projectNamePlaceHolder: 'Project Name'
+      name: projectName,
+      nameError: false,
+      namePlaceHolder: 'Project Name'
     })
   };
 
@@ -89,12 +89,12 @@ class OpenProjectModal extends Component {
   okAction = () => {
     if (!this.state.projectId) {
       this.setState({
-        projectNameError: true,
-        projectNamePlaceHolder: 'Please select a project'
+        nameError: true,
+        namePlaceHolder: 'Please select a project'
       });
       return;
     }
-    this.props.closedAction(true, this.state.projectId, this.state.projectName);
+    this.props.closedAction(true, this.state.projectId, this.state.name);
   };
 
   render() {

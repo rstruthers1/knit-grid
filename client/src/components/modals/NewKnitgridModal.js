@@ -16,7 +16,7 @@ const initialState = {
   namePlaceHolder: 'Project Name'
 };
 
-class NewProjectModal extends Component {
+class NewKnitgridModal extends Component {
 
   state = {
     ...initialState
@@ -32,7 +32,7 @@ class NewProjectModal extends Component {
     return null;
   }
 
-  projectNameChangedHandler = (event) => {
+  nameChangedHandler = (event) => {
     this.setState({
       name: event.target.value,
       nameError: false,
@@ -54,7 +54,7 @@ class NewProjectModal extends Component {
     if (!this.state.name) {
       this.setState({
         nameError: true,
-        namePlaceHolder: 'Project Name is required'
+        namePlaceHolder: 'Name is required'
       });
       return;
     }
@@ -70,22 +70,22 @@ class NewProjectModal extends Component {
     return (
         <Modal size='tiny' dimmer='inverted' open={this.props.visible}
                centered={true}>
-          <Modal.Header>New Project</Modal.Header>
+          <Modal.Header>New KnitGrid</Modal.Header>
           <Modal.Content>
             <Form>
               <Form.Input fluid
-                          label='Project Name'
-                          placeholder={this.state.projectNamePlaceHolder}
+                          label='KnitGrid Name'
+                          placeholder={this.state.namePlaceHolder}
                           style={formFieldStyle}
-                          onChange={(event) => this.projectNameChangedHandler(
+                          onChange={(event) => this.nameChangedHandler(
                               event)}
                           value={this.state.name}
                           required
-                          error={this.state.projectNameError}
+                          error={this.state.nameError}
               />
               <Form.Field control={TextArea}
                           label='Description'
-                          placeholder='Describe your project...'
+                          placeholder='Describe your KnitGrid...'
                           onChange={(event) => this.descriptionChangedHandler(
                               event)}
                           value={this.state.description}
@@ -109,4 +109,4 @@ class NewProjectModal extends Component {
   }
 }
 
-export default NewProjectModal;
+export default NewKnitgridModal;
