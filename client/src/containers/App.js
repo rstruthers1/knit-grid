@@ -16,10 +16,6 @@ class App extends Component {
 
   state = {
     projectId: null,
-    newProjectModalVisible: false,
-    openProjectModalVisible: false,
-    saveProjectModalVisible: false,
-    newKnitgridModalVisible: false,
     projectTreeData: [{
       title: 'Create or open a project',
       expanded: true,
@@ -29,7 +25,11 @@ class App extends Component {
     selectedKnitgridId: null,
     selectedCellIds: null,
     lastSavedSelectedCellIds: null,
-    registeredKeyboardShortcutHandler: null
+    registeredKeyboardShortcutHandler: null,
+    newProjectModalVisible: false,
+    openProjectModalVisible: false,
+    saveProjectModalVisible: false,
+    newKnitgridModalVisible: false,
   };
 
   handleMenuSelection = (whichMenuItem) => {
@@ -82,10 +82,15 @@ class App extends Component {
     }).then(res => res.json())
     .then(response => {
       this.setState({
+        projectId: response.projectId,
         newProjectModalVisible: false,
         name: projectName,
         projectDescription: description,
-        projectTreeData: newProjectTreeData
+        projectTreeData: newProjectTreeData,
+        knitgrids: null,
+        selectedKnitgridId: null,
+        selectedCellIds: null,
+        lastSavedSelectedCellIds: null
       })
     })
     .catch(error => {
@@ -221,8 +226,7 @@ class App extends Component {
   };
 
   newKnitgridModalClosed = (projectId, knitgrid) => {
-    console.log("newKnitgridModalClosed, projectId: " + projectId +
-    ", knitgrid.id: " + knitgrid.id);
+    console.log("newKnitgridModalClosed, projectId: " + projectId);
     if (knitgrid) {
       console.log("Adding knitgrid to project");
       this.addKnitgridToProject(projectId, knitgrid);
@@ -247,10 +251,12 @@ class App extends Component {
       return;
     }
 
-    console.log("********** start knitgrid");
-    console.log(JSON.stringify(knitgrid));
-    console.log("********** end knitgrid");
-    const knitgrids = _.cloneDeep(this.state.knitgrids);
+    let knitgrids = null;
+    if (this.state.knitgrids) {
+      knitgrids = _.cloneDeep(this.state.knitgrids);
+    } else {
+      knitgrids = [];
+    }
     knitgrids.push(knitgrid);
 
     const projectTreeData = _.cloneDeep(this.state.projectTreeData);
@@ -279,10 +285,17 @@ class App extends Component {
     }
 
     console.log("selectedCellId: " + selectedCellId)
+    let selectedCellIds = [selectedCellId];
+    if (this.state.selectedCellIds) {
+      selectedCellIds = [...this.state.selectedCellIds, selectedCellId];
+    }
 
-    const selectedCellIds = [...this.state.selectedCellIds, selectedCellId];
-    const lastSavedSelectedCellIds = [...this.state.lastSavedSelectedCellIds, selectedCellId];
-  
+    let lastSavedSelectedCellIds = [selectedCellId];
+    if (this.state.lastSavedSelectedCellIds) {
+      lastSavedSelectedCellIds = [...this.state.lastSavedSelectedCellIds,
+        selectedCellId];
+    }
+
     this.setState({
       projectTreeData: projectTreeData,
       knitgrids: knitgrids,

@@ -91,18 +91,14 @@ router.put('/', (req, res) => {
     return;
   }
 
-  store.createProject({name, description}, (result, error) => {
+  store.createProject({name, description}, (projectId, error) => {
+    console.log("**** createProject, id: " + projectId);
     if (error) {
-      console.log("*** error: " + error);
-      res.send(JSON.stringify({error: error}));
+      console.log("There was an error: " + JSON.stringify(error));
+      next(error);
       return;
     }
-
-    let message = JSON.stringify(result);
-    if (result === 1) {
-      message += " project created"
-    }
-    res.send(JSON.stringify({message: message}))
+    res.send(JSON.stringify({projectId: projectId}));
   })
 });
 

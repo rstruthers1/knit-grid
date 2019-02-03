@@ -28,9 +28,17 @@ module.exports = {
       NAME: name,
       DESCRIPTION: description
     })
-    .then(value => cb(value))
-    .error(reason => cb(reason))
-    .catch(error => cb(error))
+    .then(value => {
+      return knex.raw("SELECT LAST_INSERT_ID() as ID")
+      .then(rows => {
+        console.log("*** rows: " + JSON.stringify(rows));
+        cb(rows[0][0].ID, null);
+      })
+      .error(reason => cb(null, reason))
+      .catch(error => cb(null, error))
+    })
+    .error(reason => cb(null, reason))
+    .catch(error => cb(null, error))
   },
   readProjects(cb) {
     return knex.select('ID', 'NAME', 'DESCRIPTION', 'CREATED_AT', 'UPDATED_AT')
