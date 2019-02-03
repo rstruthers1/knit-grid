@@ -6,14 +6,44 @@ import {
   TextArea
 } from 'semantic-ui-react'
 import {isEqual} from 'lodash';
+import uuidv4 from 'uuid/v4';
 
 import '../../containers/App.css';
+
+const parseFetchResponse = response =>
+    response.text()
+    .then(text => {
+      let json = null;
+      try {
+        json = JSON.parse(text);
+      } catch (err) {
+        json = {};
+        json.message = "Unable to parse response body.";
+        json.parseError = true;
+      }
+
+      return {
+        json: json,
+        bodyText: text,
+        response: response
+      }
+
+    })
+    .catch(response => {
+      debugger;
+      console.log("Caught error: " + JSON.stringify(response));
+      debugger;
+      return {
+        json: {message: "error"},
+        meta: response
+      }
+    });
 
 const initialState = {
   name: '',
   description: '',
   nameError: false,
-  namePlaceHolder: 'Project Name'
+  namePlaceHolder: 'KnitGrid Name'
 };
 
 class NewKnitgridModal extends Component {
@@ -36,7 +66,7 @@ class NewKnitgridModal extends Component {
     this.setState({
       name: event.target.value,
       nameError: false,
-      namePlaceHolder: 'Project Name'
+      namePlaceHolder: 'KnitGrid Name'
     })
   };
 
@@ -47,7 +77,7 @@ class NewKnitgridModal extends Component {
   };
 
   cancelAction = () => {
-    this.props.closedAction(false);
+    this.props.closedAction();
   };
 
   okAction = () => {
@@ -58,8 +88,79 @@ class NewKnitgridModal extends Component {
       });
       return;
     }
-    this.props.closedAction(true, this.state.name,
-        this.state.description);
+    this.createKnitGrid();
+  };
+
+  initKnitgrid = (rows, columns) => {
+
+    const grid = [];
+    for (let i = 0; i < rows; i++) {
+      const cells = [];
+      for (let j = 0; j < columns; j++) {
+        const cell = {
+          id: uuidv4(),
+          value: "",
+          selected: (i === 0 && j === 0)
+        };
+        cells.push(cell);
+      }
+      const row = {
+        id: uuidv4(),
+        cells: cells
+      };
+      grid.push(row);
+    }
+
+    const knitgrid = {
+      name: this.state.name,
+      description: this.state.description,
+      id: null,
+      grid: grid
+    };
+    return knitgrid;
+  };
+
+  createKnitGrid = () => {
+    if (!this.state.name) {
+      return;
+    }
+    const knitgrid = this.initKnitgrid(10, 10);
+    fetch('/api/knitgrids/', {
+      method: 'POST',
+      body: JSON.stringify({
+        projectId: this.props.projectId,
+        name: this.state.name,
+        description: this.state.description,
+        grid: knitgrid.grid
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }).then(parseFetchResponse)
+    .then(({json, bodyText, response}) => {
+      if (response.status !== 200) {
+        let errorMessage = "Unknown Error";
+        if (json.message) {
+          if (!json.parseError) {
+            errorMessage = json.message;
+          } else {
+            errorMessage = bodyText;
+          }
+        }
+        console.log("*** error: " + errorMessage);
+        this.props.closedAction(this.props.projectId, null);
+        return;
+      }
+      console.log("Successfully created knitgrid, calling closedAction");
+      console.log("returned json: " + JSON.stringify(json));
+      knitgrid.id = json.knitgridId;
+      this.props.closedAction(this.props.projectId, knitgrid);
+    })
+    .catch(error => {
+      console.error('Error:', error.message);
+      this.props.closedAction(this.props.projectId, null);
+    });
   };
 
   render() {

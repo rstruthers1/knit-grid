@@ -28,7 +28,8 @@ class App extends Component {
     knitgrids: [],
     selectedKnitgridId: null,
     selectedCellIds: null,
-    lastSavedSelectedCellIds: null
+    lastSavedSelectedCellIds: null,
+    registeredKeyboardShortcutHandler: null
   };
 
   handleMenuSelection = (whichMenuItem) => {
@@ -219,10 +220,78 @@ class App extends Component {
     });
   };
 
-  newKnitgridModalClosed = () => {
+  newKnitgridModalClosed = (projectId, knitgrid) => {
+    console.log("newKnitgridModalClosed, projectId: " + projectId +
+    ", knitgrid.id: " + knitgrid.id);
+    if (knitgrid) {
+      console.log("Adding knitgrid to project");
+      this.addKnitgridToProject(projectId, knitgrid);
+    } else {
+      console.log("No knitgrid!");
+    }
     this.setState({
       newKnitgridModalVisible: false,
     })
+  };
+
+  addKnitgridToProject = (projectId, knitgrid) => {
+    console.log("addKnitgridToProject");
+    if (!knitgrid) {
+      console.log("no knitgrid");
+    }
+    if (projectId !== this.state.projectId) {
+      console.log("projectId !== this.state.projectId, projectId: " + projectId
+      + ", this.state.projectId: " + this.state.projectId);
+    }
+    if (!knitgrid || projectId !== this.state.projectId) {
+      return;
+    }
+
+    console.log("********** start knitgrid");
+    console.log(JSON.stringify(knitgrid));
+    console.log("********** end knitgrid");
+    const knitgrids = [...this.state.knitgrids];
+    knitgrids.push(knitgrid);
+
+    const projectTreeData = _.cloneDeep(this.state.projectTreeData);
+    projectTreeData[0].children = knitgrids.map(knitgrid => {
+      console.log("Adding knitgrid to tree, name: " + knitgrid.name +
+      ", key: " + knitgrid.id);
+      return {
+        title: knitgrid.name,
+        key: knitgrid.id
+      }
+    });
+
+    console.log("projectTreeData: " + JSON.stringify(projectTreeData));
+
+    let selectedCellId = null;
+    for (let row of knitgrid.grid) {
+      for (let cell of row.cells) {
+        if (cell.selected) {
+          selectedCellId = cell.id;
+          break;
+        }
+      }
+      if (selectedCellId) {
+        break;
+      }
+    }
+
+    console.log("selectedCellId: " + selectedCellId)
+
+    const selectedCellIds = [...this.state.selectedCellIds];
+    selectedCellIds.push(selectedCellId);
+    const lastSavedSelectedCellIds = [...this.state.lastSavedSelectedCellIds];
+    lastSavedSelectedCellIds.push(selectedCellId);
+    this.setState({
+      projectTreeData: projectTreeData,
+      knitgrids: knitgrids,
+      selectedKnitgridId: knitgrid.id,
+      selectedCellIds: selectedCellIds,
+      lastSavedSelectedCellIds: lastSavedSelectedCellIds
+    });
+
   };
 
   projectSaved = (knitgrids) => {
@@ -304,6 +373,22 @@ class App extends Component {
     return null;
   };
 
+  registerKeyboardShortcut = (keyboardCallback) => {
+    if (this.state.registeredKeyboardShortcutHandler) {
+      document.removeEventListener("keypress", this.state.registeredKeyboardShortcutHandler, false);
+    }
+    this.setState({
+      registeredKeyboardShortcutHandler: keyboardCallback
+    });
+  };
+
+  modalVisible = () => {
+    return this.state.newProjectModalVisible ||
+        this.state.openProjectModalVisible ||
+        this.state.saveProjectModalVisible ||
+        this.state.newKnitgridModalVisible;
+  };
+
   render() {
     let knitgridTable = null;
     let knitgridTitle = "KnitGrid";
@@ -322,30 +407,26 @@ class App extends Component {
               selectedCellId={this.state.selectedCellIds[knitgridIndex]}
               lastSavedSelectedCellId={lastSavedSelectedCellId}
               cellSelected={this.cellSelected}
+              registerKeyboardShortcut={this.registerKeyboardShortcut}
           />
       );
       knitgridTitle = knitgrid.name;
     }
 
+    if (this.state.registeredKeyboardShortcutHandler) {
+      document.removeEventListener("keypress",
+          this.state.registeredKeyboardShortcutHandler, false);
+      if (!this.modalVisible()) {
+        document.addEventListener("keypress",
+            this.state.registeredKeyboardShortcutHandler, false);
+      }
+    };
+
     return (
         <div className="App">
-          <NewProjectModal visible={this.state.newProjectModalVisible}
-                           closedAction={this.newProjectModalClosed}/>
-          <OpenProjectModal visible={this.state.openProjectModalVisible}
-                            closedAction={this.openProjectModalClosed}/>
-          <SaveProjectModal visible={this.state.saveProjectModalVisible}
-                            closedAction={this.saveProjectModalClosed}
-                            knitgrids={this.state.knitgrids}
-                            selectedCellIds={this.state.selectedCellIds}
-                            projectId={this.state.projectId}
-                            projectSaved={this.projectSaved}/>
-          <NewKnitgridModal visible={this.state.newKnitgridModalVisible}
-                           closedAction={this.newKnitgridModalClosed}/>
-
           <div>
-
-            <KnitGridMenu clicked={this.handleMenuSelection}/>
-
+            <KnitGridMenu clicked={this.handleMenuSelection}
+                          projectCurrentlyOpen={this.state.projectId !== null}/>
             <div style={{
               paddingTop: "5em",
               paddingBottom: "0em",
@@ -369,6 +450,19 @@ class App extends Component {
               </Grid>
             </div>
           </div>
+          <NewProjectModal visible={this.state.newProjectModalVisible}
+                           closedAction={this.newProjectModalClosed}/>
+          <OpenProjectModal visible={this.state.openProjectModalVisible}
+                            closedAction={this.openProjectModalClosed}/>
+          <SaveProjectModal visible={this.state.saveProjectModalVisible}
+                            closedAction={this.saveProjectModalClosed}
+                            knitgrids={this.state.knitgrids}
+                            selectedCellIds={this.state.selectedCellIds}
+                            projectId={this.state.projectId}
+                            projectSaved={this.projectSaved}/>
+          <NewKnitgridModal visible={this.state.newKnitgridModalVisible}
+                            closedAction={this.newKnitgridModalClosed}
+                            projectId={this.state.projectId}/>
         </div>
     )
   }

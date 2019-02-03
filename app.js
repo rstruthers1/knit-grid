@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-app.use('/api/knitgrid', knitGridApiRouter);
+app.use('/api/knitgrids', knitGridApiRouter);
 app.use('/api/projects', projectApiRouter);
 
 // The "catchall" handler: for any request that doesn't

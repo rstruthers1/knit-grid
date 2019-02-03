@@ -4,41 +4,24 @@ const knex = require('knex')(require('./knexfile'));
 const Promise = require('bluebird');
 
 module.exports = {
-  createKnitGrid({friendlyId, name, grid}, cb) {
+  createKnitGrid({projectId, name, description, grid}, cb) {
     return knex('KNIT_GRID').insert({
-      FRIENDLY_ID: friendlyId,
+      PROJECT_ID: projectId,
       NAME: name,
+      DESCRIPTION: description,
       GRID_DATA: JSON.stringify(grid)
     })
-    .then(value => cb(value))
-    .error(reason => cb(reason))
-    .catch(error => cb(error))
-  },
-  readKnitGrid({friendlyId}, cb) {
-    return knex.select('FRIENDLY_ID', 'NAME', 'GRID_DATA')
-    .from('KNIT_GRID')
-    .where({FRIENDLY_ID: friendlyId})
-    .then(rows => cb(rows, null))
-    .error(reason => cb([], reason))
-    .catch(error => cb([], error))
-  },
-  readKnitGridWithId({id}, cb) {
-    return knex.select('ID', 'NAME', 'GRID_DATA')
-    .from('KNIT_GRID')
-    .where({ID: id})
-    .then(rows => cb(rows, null))
-    .error(reason => cb([], reason))
-    .catch(error => cb([], error))
-  },
-  updateKnitGrid({friendlyId, grid}, cb) {
-    return knex('KNIT_GRID')
-    .where('FRIENDLY_ID', '=', friendlyId)
-    .update({
-      GRID_DATA: JSON.stringify(grid)
+    .then(value => {
+      return knex.raw("SELECT LAST_INSERT_ID() as ID")
+      .then(rows => {
+        console.log("*** rows: " + JSON.stringify(rows));
+        cb(rows[0][0].ID, null);
+      })
+      .error(reason => cb(null, reason))
+      .catch(error => cb(null, error))
     })
-    .then(updatedRows => cb(updatedRows, null))
-    .error(reason => cb([], reason))
-    .catch(error => cb([], error))
+    .error(reason => cb(null, reason))
+    .catch(error => cb(null, error))
   },
   createProject({name, description}, cb) {
     return knex('PROJECT').insert({

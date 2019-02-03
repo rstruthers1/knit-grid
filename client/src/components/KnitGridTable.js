@@ -5,16 +5,14 @@ import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 class KnitGridTable extends Component {
 
   componentDidMount() {
-    document.addEventListener("keypress", this.navigateWithKeyboard, false);
     this.scrollDragLabelIntoView();
+    if (this.props.registerKeyboardShortcut) {
+      this.props.registerKeyboardShortcut(this.navigateWithKeyboard);
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
     this.scrollDragLabelIntoView();
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("keypress", this.navigateWithKeyboard, false);
   }
 
   scrollDragLabelIntoView() {
@@ -236,7 +234,8 @@ class KnitGridTable extends Component {
     return (
         <div className="wrapper">
           <Table celled selectable definition unstackable
-                 style={{paddingLeft: "10px"}}>
+                 style={{paddingLeft: "1em",
+                 paddingRight: "1em"}}>
             <Table.Header>
             </Table.Header>
             <Table.Body>
