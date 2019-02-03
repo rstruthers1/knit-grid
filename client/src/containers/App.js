@@ -250,7 +250,7 @@ class App extends Component {
     console.log("********** start knitgrid");
     console.log(JSON.stringify(knitgrid));
     console.log("********** end knitgrid");
-    const knitgrids = [...this.state.knitgrids];
+    const knitgrids = _.cloneDeep(this.state.knitgrids);
     knitgrids.push(knitgrid);
 
     const projectTreeData = _.cloneDeep(this.state.projectTreeData);
@@ -280,10 +280,9 @@ class App extends Component {
 
     console.log("selectedCellId: " + selectedCellId)
 
-    const selectedCellIds = [...this.state.selectedCellIds];
-    selectedCellIds.push(selectedCellId);
-    const lastSavedSelectedCellIds = [...this.state.lastSavedSelectedCellIds];
-    lastSavedSelectedCellIds.push(selectedCellId);
+    const selectedCellIds = [...this.state.selectedCellIds, selectedCellId];
+    const lastSavedSelectedCellIds = [...this.state.lastSavedSelectedCellIds, selectedCellId];
+  
     this.setState({
       projectTreeData: projectTreeData,
       knitgrids: knitgrids,

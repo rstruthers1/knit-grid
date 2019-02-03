@@ -9,8 +9,8 @@ const projectApiRouter = require('./routes/project');
 const app = express();
 
 app.use(logger('dev'));
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false, limit: '50mb'}));
+app.use(bodyParser.json({limit: '50mb'}));
 
 
 // Serve static files from the React app
