@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Table, TextArea, Button, Image, Divider} from 'semantic-ui-react';
+import {Table, TextArea, Button, Image} from 'semantic-ui-react';
 import insertColumnRight
   from '../assets/icons8-insert-column-right-filled-16.png';
 import insertColumnLeft from '../assets/icons8-insert-column-left-16.png';
