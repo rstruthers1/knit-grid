@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Table, TextArea, Button, Image, Divider} from 'semantic-ui-react';
-import insertColumnRight from '../assets/icons8-insert-column-right-filled-16.png';
+import insertColumnRight
+  from '../assets/icons8-insert-column-right-filled-16.png';
 import insertColumnLeft from '../assets/icons8-insert-column-left-16.png';
 import insertRowAbove from '../assets/icons8-insert-row-above-16.png';
 import insertRowBelow from '../assets/icons8-insert-row-16.png';
@@ -76,6 +77,111 @@ class KnitGridTableEditor extends Component {
     this.props.knitgridUpdated(knitgrid);
   };
 
+  insertColumnLeft = () => {
+    console.log("insertColumnLeft: " + JSON.stringify(this.state));
+    let [x, y] = this.findCellLocation(this.state.currentCellId);
+    console.log("x, y: " + x + ", " + y);
+    if (x < 0 || y < 0) {
+      console.log("returning");
+      return;
+    }
+    const knitgrid = _.cloneDeep(this.props.knitgrid);
+    for (let i = 0; i < knitgrid.grid.length; i++) {
+      const row = knitgrid.grid[i];
+      const newCell = {
+        value: "",
+        id: uuidv4(),
+        selected: false
+      };
+      console.log("newCell: " + JSON.stringify(newCell));
+      row.cells.splice(y, 0, newCell);
+    }
+    this.props.knitgridUpdated(knitgrid);
+  };
+
+  insertRowBelow = () => {
+    console.log("insertRowBelow");
+    let [x, y] = this.findCellLocation(this.state.currentCellId);
+    console.log("x, y: " + x + ", " + y);
+    if (x < 0 || y < 0) {
+      console.log("returning");
+      return;
+    }
+    const knitgrid = _.cloneDeep(this.props.knitgrid);
+    const newRow = this.createNewRow(knitgrid.grid.length);
+    knitgrid.grid.splice(x + 1, 0, newRow);
+    this.props.knitgridUpdated(knitgrid);
+  };
+
+  insertRowAbove = () => {
+    console.log("insertRowAbove");
+    let [x, y] = this.findCellLocation(this.state.currentCellId);
+    console.log("x, y: " + x + ", " + y);
+    if (x < 0 || y < 0) {
+      console.log("returning");
+      return;
+    }
+    const knitgrid = _.cloneDeep(this.props.knitgrid);
+    const newRow = this.createNewRow(knitgrid.grid.length);
+    knitgrid.grid.splice(x, 0, newRow);
+    this.props.knitgridUpdated(knitgrid);
+  };
+
+  deleteColumn = () => {
+    console.log("deleteColumn");
+    let [x, y] = this.findCellLocation(this.state.currentCellId);
+    console.log("x, y: " + x + ", " + y);
+    if (x < 0 || y < 0) {
+      console.log("returning");
+      return;
+    }
+    const knitgrid = _.cloneDeep(this.props.knitgrid);
+    for (let i = 0; i < knitgrid.grid.length; i++) {
+      const row = knitgrid.grid[i];
+      if (row.cells.length <= 1) {
+        continue;
+      }
+      if (y < row.cells.length) {
+        row.cells.splice(y, 1);
+      }
+    }
+    this.props.knitgridUpdated(knitgrid);
+  };
+
+  deleteRow = () => {
+    console.log("deleteRow");
+    let [x, y] = this.findCellLocation(this.state.currentCellId);
+    console.log("x, y: " + x + ", " + y);
+    if (x < 0 || y < 0) {
+      console.log("returning");
+      return;
+    }
+    const knitgrid = _.cloneDeep(this.props.knitgrid);
+    if (knitgrid.grid.length <= 1) {
+      return;
+    }
+    knitgrid.grid.splice(x, 1);
+    this.props.knitgridUpdated(knitgrid);
+  };
+
+
+  createNewRow = (numCells) => {
+    const newCells = [];
+    for (let i = 0; i < numCells; i++) {
+      const newCell = {
+        value: "",
+        id: uuidv4(),
+        selected: false
+      };
+      newCells.push(newCell);
+    }
+    const newRow = {
+      id: uuidv4(),
+      cells: newCells
+    };
+    return newRow;
+  };
+
   findCellLocation = (cellId) => {
     for (let i = 0; i < this.props.knitgrid.grid.length; i++) {
       const row = this.props.knitgrid.grid[i];
@@ -141,37 +247,46 @@ class KnitGridTableEditor extends Component {
       )
     });
 
-   const headerCells = [(<Table.HeaderCell key={0}
-   style={{
-     backgroundColor: "rgb(249, 250, 251)",
-     borderBottom: "1px solid black"
-   }}/>)];
-   const maxColumnsInRow = this.getMaxColumnsInRow();
+    const headerCells = [(<Table.HeaderCell key={0}
+                                            style={{
+                                              backgroundColor: "rgb(249, 250, 251)",
+                                              borderBottom: "1px solid black"
+                                            }}/>)];
+    const maxColumnsInRow = this.getMaxColumnsInRow();
 
-   for (let i = 0; i < maxColumnsInRow; i++) {
-     headerCells.push((<Table.HeaderCell key={i+1}>{"Column " + (i + 1)}</Table.HeaderCell>))
-   }
+    for (let i = 0; i < maxColumnsInRow; i++) {
+      headerCells.push((<Table.HeaderCell key={i + 1}>{"Column " + (i
+          + 1)}</Table.HeaderCell>))
+    }
 
     return (
         <div>
           <div style={{paddingBottom: "10px"}}>
-        <Button onClick={this.props.doneEditing}>
-          Done Editing
-        </Button>
+            <Button onClick={this.props.doneEditing}>
+              Done Editing
+            </Button>
 
           </div>
           <div style={{paddingBottom: "10px"}}>
-            <Button title="Insert column left"><Image src={insertColumnLeft}/></Button>
-            <Button title="Insert column right" onClick={this.insertColumnRight}><Image src={insertColumnRight}/></Button>
+            <Button title="Insert column left"
+                    onClick={this.insertColumnLeft}><Image
+                src={insertColumnLeft}/></Button>
+            <Button title="Insert column right"
+                    onClick={this.insertColumnRight}><Image
+                src={insertColumnRight}/></Button>
             <div className="divider"/>
-            <Button title="Insert row below"><Image src={insertRowBelow}/></Button>
-            <Button title="Insert row above"><Image src={insertRowAbove}/></Button>
+            <Button title="Insert row below"
+            onClick={this.insertRowBelow}><Image
+                src={insertRowBelow}/></Button>
+            <Button title="Insert row above"
+                    onClick={this.insertRowAbove}><Image
+                src={insertRowAbove}/></Button>
             <div className="divider"/>
             <div className="divider"/>
-            <Button title="Delete column"><Image src={deleteColumn}/></Button>
-            <Button title="Delete row"><Image src={deleteRow}/></Button>
+            <Button title="Delete column" onClick={this.deleteColumn}><Image src={deleteColumn}/></Button>
+            <Button title="Delete row" onClick={this.deleteRow}><Image src={deleteRow}/></Button>
           </div>
-        <div className="wrapperEditor">
+          <div className="wrapperEditor">
 
             <Table celled selectable definition unstackable
                    style={{
@@ -190,7 +305,7 @@ class KnitGridTableEditor extends Component {
 
               </Table.Footer>
             </Table>
-        </div>
+          </div>
         </div>
     )
   }
