@@ -296,7 +296,20 @@ div.wrapper {
   display: block;
   overflow-x: auto;
   overflow-y: auto;
+}
 
+div.wrapperEditor {
+  display: block;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-width: 800px;
+  max-height: 600px;
+}
+
+.divider{
+  width:10px;
+  height:auto;
+  display:inline-block;
 }
 
 

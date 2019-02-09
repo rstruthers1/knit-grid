@@ -9,6 +9,7 @@ import OpenProjectModal from '../components/modals/OpenProjectModal';
 import SaveProjectModal from '../components/modals/SaveProjectModal';
 import NewKnitgridModal from '../components/modals/NewKnitgridModal';
 import KnitGridTable from '../components/KnitGridTable';
+import KnitGridTableEditor from '../components/KnitGridTableEditor';
 import ProjectKnitGridList from '../components/ProjectKnitGridList';
 import {MenuItemIds} from '../constants/Constants';
 
@@ -25,11 +26,12 @@ class App extends Component {
     selectedKnitgridId: null,
     selectedCellIds: null,
     lastSavedSelectedCellIds: null,
+    editing: false,
     registeredKeyboardShortcutHandler: null,
     newProjectModalVisible: false,
     openProjectModalVisible: false,
     saveProjectModalVisible: false,
-    newKnitgridModalVisible: false,
+    newKnitgridModalVisible: false
   };
 
   handleMenuSelection = (whichMenuItem) => {
@@ -52,6 +54,11 @@ class App extends Component {
       case MenuItemIds.ADD_KNITGRID_TO_PROJECT:
         this.setState({
           newKnitgridModalVisible: true
+        });
+        break;
+      case MenuItemIds.EDIT_KNITGRID:
+        this.setState({
+          editing: true
         });
         break;
       default:
@@ -245,7 +252,7 @@ class App extends Component {
     }
     if (projectId !== this.state.projectId) {
       console.log("projectId !== this.state.projectId, projectId: " + projectId
-      + ", this.state.projectId: " + this.state.projectId);
+          + ", this.state.projectId: " + this.state.projectId);
     }
     if (!knitgrid || projectId !== this.state.projectId) {
       return;
@@ -262,7 +269,7 @@ class App extends Component {
     const projectTreeData = _.cloneDeep(this.state.projectTreeData);
     projectTreeData[0].children = knitgrids.map(knitgrid => {
       console.log("Adding knitgrid to tree, name: " + knitgrid.name +
-      ", key: " + knitgrid.id);
+          ", key: " + knitgrid.id);
       return {
         title: knitgrid.name,
         key: knitgrid.id
@@ -350,6 +357,31 @@ class App extends Component {
     });
   };
 
+  knitgridUpdated = (knitgrid) => {
+    const knitgrids = _.cloneDeep(this.state.knitgrids);
+    for (let k = 0; k < knitgrids.length; k++) {
+      if (knitgrids[k].id === this.state.selectedKnitgridId) {
+        knitgrids[k] = knitgrid;
+        break;
+      }
+    }
+    this.setState({
+      knitgrids: knitgrids
+    });
+  };
+
+  doneEditing = () => {
+    this.setState({
+      editing: false
+    })
+  };
+
+  startEditing = () => {
+    this.setState({
+      editing: true
+    })
+  };
+
   findSelectedKnitGrid = () => {
     if (!this.state.selectedKnitgridId) {
       return null;
@@ -387,7 +419,8 @@ class App extends Component {
 
   registerKeyboardShortcut = (keyboardCallback) => {
     if (this.state.registeredKeyboardShortcutHandler) {
-      document.removeEventListener("keypress", this.state.registeredKeyboardShortcutHandler, false);
+      document.removeEventListener("keypress",
+          this.state.registeredKeyboardShortcutHandler, false);
     }
     this.setState({
       registeredKeyboardShortcutHandler: keyboardCallback
@@ -408,37 +441,51 @@ class App extends Component {
     let knitgridIndex = this.findSelectedKnitGridIndex();
 
     if (knitgrid) {
+      console.log("*** knitgrid: " + JSON.stringify(knitgrid));
       let lastSavedSelectedCellId = null;
       if (this.state.lastSavedSelectedCellIds &&
           knitgridIndex < this.state.lastSavedSelectedCellIds.length) {
         lastSavedSelectedCellId = this.state.lastSavedSelectedCellIds[knitgridIndex];
       }
-      knitgridTable = (
-          <KnitGridTable
-              knitgrid={knitgrid}
-              selectedCellId={this.state.selectedCellIds[knitgridIndex]}
-              lastSavedSelectedCellId={lastSavedSelectedCellId}
-              cellSelected={this.cellSelected}
-              registerKeyboardShortcut={this.registerKeyboardShortcut}
-          />
-      );
+
+      if (this.state.editing) {
+        knitgridTable = (
+            <KnitGridTableEditor
+                knitgrid={knitgrid}
+                knitgridUpdated={this.knitgridUpdated}
+                doneEditing={this.doneEditing}
+            />
+        );
+      } else {
+        knitgridTable = (
+            <KnitGridTable
+                knitgrid={knitgrid}
+                selectedCellId={this.state.selectedCellIds[knitgridIndex]}
+                lastSavedSelectedCellId={lastSavedSelectedCellId}
+                cellSelected={this.cellSelected}
+                registerKeyboardShortcut={this.registerKeyboardShortcut}
+                startEditing={this.startEditing}
+            />
+        );
+      }
       knitgridTitle = knitgrid.name;
     }
 
     if (this.state.registeredKeyboardShortcutHandler) {
       document.removeEventListener("keypress",
           this.state.registeredKeyboardShortcutHandler, false);
-      if (!this.modalVisible()) {
+      if (!this.modalVisible() && !this.state.editing) {
         document.addEventListener("keypress",
             this.state.registeredKeyboardShortcutHandler, false);
       }
-    };
+    }
 
     return (
         <div className="App">
           <div>
             <KnitGridMenu clicked={this.handleMenuSelection}
-                          projectCurrentlyOpen={this.state.projectId !== null}/>
+                          projectCurrentlyOpen={this.state.projectId !== null}
+                          knitgridCurrentlyOpen={this.state.selectedKnitgridId !== null}/>
             <div style={{
               paddingTop: "5em",
               paddingBottom: "0em",

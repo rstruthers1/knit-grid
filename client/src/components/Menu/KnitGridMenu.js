@@ -37,8 +37,7 @@ export default class KnitGridMenu extends Component {
             <Dropdown.Menu >
               <Dropdown.Item text='Add KnitGrid to Project...'
                              onClick={() => this.props.clicked(MenuItemIds.ADD_KNITGRID_TO_PROJECT)}
-                             disabled={!this.props.projectCurrentlyOpen}
-              />
+                             disabled={!this.props.projectCurrentlyOpen}/>
             </Dropdown.Menu>
           </Dropdown>
         </Menu>

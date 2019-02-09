@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Table, Label, Icon} from 'semantic-ui-react';
+import {Table, Label, Icon, Button} from 'semantic-ui-react';
 import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
 
 class KnitGridTable extends Component {
@@ -17,6 +17,9 @@ class KnitGridTable extends Component {
 
   scrollDragLabelIntoView() {
     const el = document.getElementById('dragLabel');
+    if (!el) {
+      return;
+    }
     el.scrollIntoView();
     const scrolledY = window.scrollY;
 
@@ -152,38 +155,36 @@ class KnitGridTable extends Component {
     return row.cells.map(cell => {
       let draggableLabel = null;
       let lastSavedMarkerPositionLabel = null;
-      if (cell.id === this.props.selectedCellId) {
-        draggableLabel = (
-            <DragDropContainer
-                targetKey="currentRow"
-                onDrop={this.currentRowLabelDropped}>
-              <Label color="green">
-                <div className="ui focus transparent input" id="dragLabel">
-                  <input type="text"
-                         onChange={this.handleMarkerInputChange}
-                         style={{
-                           width: "1em",
-                           height: "1em",
-                           cursor: "all-scroll"
-                         }}/>
-                </div>
+        if (cell.id === this.props.selectedCellId) {
+          draggableLabel = (
+              <DragDropContainer
+                  targetKey="currentRow"
+                  onDrop={this.currentRowLabelDropped}>
+                <Label color="green">
+                  <div className="ui focus transparent input" id="dragLabel">
+                    <input type="text"
+                           onChange={this.handleMarkerInputChange}
+                           style={{
+                             width: "1em",
+                             height: "1em",
+                             cursor: "all-scroll"
+                           }}/>
+                  </div>
+                </Label>
+              </DragDropContainer>)
+        } else if (cell.id === this.props.lastSavedSelectedCellId) {
+          lastSavedMarkerPositionLabel = (
+              <Label color="grey">
+                <Icon name="asterisk"/>
               </Label>
-            </DragDropContainer>)
-      } else if (cell.id === this.props.lastSavedSelectedCellId) {
-        lastSavedMarkerPositionLabel = (
-            <Label color="grey">
-              <Icon name="asterisk"/>
-            </Label>
-        )
-      }
+          )
+        }
       return (
 
           <Table.Cell selectable
                       active={cell.id === this.props.selectedCellId}
                       key={cell.id}
                       style={{height: "1px"}}>
-
-
             <DropTarget targetKey="currentRow"
                         dropData={{id: cell.id}}
                         style={{
@@ -233,6 +234,7 @@ class KnitGridTable extends Component {
 
     return (
         <div className="wrapper">
+          <Button onClick={this.props.startEditing}>Edit</Button>
           <Table celled selectable definition unstackable
                  style={{paddingLeft: "1em",
                  paddingRight: "1em"}}>
