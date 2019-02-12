@@ -56,11 +56,6 @@ class App extends Component {
           newKnitgridModalVisible: true
         });
         break;
-      case MenuItemIds.EDIT_KNITGRID:
-        this.setState({
-          editing: true
-        });
-        break;
       default:
         console.log("default selected")
     }
@@ -357,16 +352,56 @@ class App extends Component {
     });
   };
 
+  makeOneCellSelected = (knitgrid) => {
+    if (!knitgrid) {
+      return;
+    }
+    let cellSelected = false;
+    for (let i = 0; i < knitgrid.grid.length; i++) {
+      const row = knitgrid.grid[i];
+      for (let j = 0; j < row.cells.length; j++) {
+        const cell = row.cells[j];
+        if (cell.selected) {
+          cellSelected = true;
+          break;
+        }
+      }
+      if (cellSelected) {
+        break;
+      }
+    }
+    if (!cellSelected) {
+      knitgrid.grid[0].cells[0].selected = true;
+    }
+  };
+
+  getSelectedCellId = (knitgrid) => {
+    for (let i = 0; i < knitgrid.grid.length; i++) {
+      const row = knitgrid.grid[i];
+      for (let j = 0; j < row.cells.length; j++) {
+        const cell = row.cells[j];
+        if (cell.selected) {
+          return cell.id;
+        }
+      }
+    }
+    return null;
+  };
+
   knitgridUpdated = (knitgrid) => {
+    this.makeOneCellSelected(knitgrid);
     const knitgrids = _.cloneDeep(this.state.knitgrids);
+    const selectedCellIds = [...this.state.selectedCellIds];
     for (let k = 0; k < knitgrids.length; k++) {
       if (knitgrids[k].id === this.state.selectedKnitgridId) {
         knitgrids[k] = knitgrid;
+        selectedCellIds[k] = this.getSelectedCellId(knitgrid);
         break;
       }
     }
     this.setState({
-      knitgrids: knitgrids
+      knitgrids: knitgrids,
+      selectedCellIds: selectedCellIds
     });
   };
 
@@ -441,7 +476,6 @@ class App extends Component {
     let knitgridIndex = this.findSelectedKnitGridIndex();
 
     if (knitgrid) {
-      console.log("*** knitgrid: " + JSON.stringify(knitgrid));
       let lastSavedSelectedCellId = null;
       if (this.state.lastSavedSelectedCellIds &&
           knitgridIndex < this.state.lastSavedSelectedCellIds.length) {

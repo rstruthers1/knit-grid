@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import {Table, TextArea, Button, Image} from 'semantic-ui-react';
+import _ from "lodash";
+import uuidv4 from 'uuid/v4';
+
 import insertColumnRight
   from '../assets/icons8-insert-column-right-filled-16.png';
 import insertColumnLeft from '../assets/icons8-insert-column-left-16.png';
@@ -7,14 +10,17 @@ import insertRowAbove from '../assets/icons8-insert-row-above-16.png';
 import insertRowBelow from '../assets/icons8-insert-row-16.png';
 import deleteColumn from '../assets/icons8-delete-column-16.png';
 import deleteRow from '../assets/icons8-delete-row-16.png';
-import _ from "lodash";
-import uuidv4 from 'uuid/v4';
+import csv from '../assets/icons8-csv-16.png';
+
+import PasteCsvModal from './modals/PasteCsvModal';
+
 
 class KnitGridTableEditor extends Component {
   state = {
     currentCellId: null,
     currentCellValue: null,
-    currentCellOriginalValue: null
+    currentCellOriginalValue: null,
+    pasteCsvModalVisible: false
   };
 
   cellValueChangedHandler = (event) => {
@@ -43,6 +49,7 @@ class KnitGridTableEditor extends Component {
   };
 
   cellValueChanged = (cellId, cellValue) => {
+    console.log("cellValueChanged: " + cellId + ", " + cellValue)
     let [i, j] = this.findCellLocation(cellId);
     if (i < 0 || j < 0) {
       return;
@@ -108,7 +115,7 @@ class KnitGridTableEditor extends Component {
       return;
     }
     const knitgrid = _.cloneDeep(this.props.knitgrid);
-    const newRow = this.createNewRow(knitgrid.grid.length);
+    const newRow = this.createNewRow(knitgrid.grid[x].cells.length);
     knitgrid.grid.splice(x + 1, 0, newRow);
     this.props.knitgridUpdated(knitgrid);
   };
@@ -122,7 +129,7 @@ class KnitGridTableEditor extends Component {
       return;
     }
     const knitgrid = _.cloneDeep(this.props.knitgrid);
-    const newRow = this.createNewRow(knitgrid.grid.length);
+    const newRow = this.createNewRow(knitgrid.grid[x].cells.length);
     knitgrid.grid.splice(x, 0, newRow);
     this.props.knitgridUpdated(knitgrid);
   };
@@ -162,6 +169,97 @@ class KnitGridTableEditor extends Component {
     }
     knitgrid.grid.splice(x, 1);
     this.props.knitgridUpdated(knitgrid);
+  };
+
+  pasteCsvModalClosed = (choice, csv) => {
+    console.log("pasteCsvModalClosed, choice: " + choice);
+    if (choice !== "ok") {
+      this.setState({
+        pasteCsvModalVisible: false
+      })
+      return;
+    }
+
+    let [x, y] = this.findCellLocation(this.state.currentCellId);
+    console.log("x, y: " + x + ", " + y);
+    if (x < 0 || y < 0) {
+      console.log("returning");
+      return;
+    }
+    const knitgrid = _.cloneDeep(this.props.knitgrid);
+
+    this.pasteCsv(knitgrid, csv, x, y);
+
+    this.props.knitgridUpdated(knitgrid);
+
+    this.setState({
+      currentCellId: knitgrid.grid[x].cells[y].id,
+      currentCellValue: knitgrid.grid[x].cells[y].value,
+      pasteCsvModalVisible: false
+    });
+
+  };
+
+  csvToKnitInstructions = (csv) => {
+    const knitInstructions = [];
+    if (!csv) {
+      return knitInstructions;
+    }
+
+    let inBrackets = false;
+    let currentInstruction = "";
+
+    for (let i = 0; i < csv.length; i++) {
+      const c = csv.charAt(i);
+      if (!inBrackets) {
+        if (c === ',') {
+          knitInstructions.push(currentInstruction.trim());
+          currentInstruction = "";
+        } else if (c === '[') {
+          currentInstruction += c;
+          inBrackets = true;
+        } else {
+          currentInstruction += c;
+        }
+      } else {
+        if (c === ']') {
+          currentInstruction += c;
+          inBrackets = false;
+        } else {
+          currentInstruction += c;
+        }
+      }
+    }
+    knitInstructions.push(currentInstruction.trim());
+    return knitInstructions;
+  };
+
+  pasteCsv = (knitgrid, csv, x, y) => {
+    const knitInstructions = this.csvToKnitInstructions(csv);
+    if (knitInstructions === null || knitInstructions.length === 0) {
+      return;
+    }
+    const pasteTargetCells = knitgrid.grid[x].cells;
+    for (let k = 0; k < knitInstructions.length; k++) {
+      const value = knitInstructions[k];
+      const cellIndex = k + y;
+      if (cellIndex >= pasteTargetCells.length) {
+        const cell = {
+          id: uuidv4(),
+          value: value,
+          selected: false
+        };
+        pasteTargetCells.push(cell);
+      } else {
+        pasteTargetCells[cellIndex].value = value;
+      }
+    }
+  };
+
+  pasteCsvModalHandler = () => {
+    this.setState({
+      pasteCsvModalVisible: true
+    })
   };
 
 
@@ -285,6 +383,12 @@ class KnitGridTableEditor extends Component {
             <div className="divider"/>
             <Button title="Delete column" onClick={this.deleteColumn}><Image src={deleteColumn}/></Button>
             <Button title="Delete row" onClick={this.deleteRow}><Image src={deleteRow}/></Button>
+            <div className="divider"/>
+            <div className="divider"/>
+            <Button title="Paste CSV"
+                    onClick={this.pasteCsvModalHandler}>
+              <Image src={csv}/>
+            </Button>
           </div>
           <div className="wrapperEditor">
 
@@ -306,6 +410,8 @@ class KnitGridTableEditor extends Component {
               </Table.Footer>
             </Table>
           </div>
+          <PasteCsvModal visible={this.state.pasteCsvModalVisible}
+                            closeAction={this.pasteCsvModalClosed}/>
         </div>
     )
   }
