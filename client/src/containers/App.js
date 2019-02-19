@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Grid} from 'semantic-ui-react';
+import {Grid, Icon} from 'semantic-ui-react';
 import _ from 'lodash';
 
 import './App.css';
@@ -31,7 +31,8 @@ class App extends Component {
     newProjectModalVisible: false,
     openProjectModalVisible: false,
     saveProjectModalVisible: false,
-    newKnitgridModalVisible: false
+    newKnitgridModalVisible: false,
+    projectKnitGridListVisbile: true
   };
 
   handleMenuSelection = (whichMenuItem) => {
@@ -375,6 +376,18 @@ class App extends Component {
     }
   };
 
+  hideProjectKnitGridList = () => {
+    this.setState({
+      projectKnitGridListVisbile: false
+    });
+  };
+
+  showProjectKnitGridList = () => {
+    this.setState({
+      projectKnitGridListVisbile: true
+    });
+  };
+
   getSelectedCellId = (knitgrid) => {
     for (let i = 0; i < knitgrid.grid.length; i++) {
       const row = knitgrid.grid[i];
@@ -514,6 +527,45 @@ class App extends Component {
       }
     }
 
+    let appContent = null;
+    if (this.state.projectKnitGridListVisbile) {
+      appContent = (
+          <Grid divided>
+            <Grid.Column width={4} floated='left'>
+              <button className="closeButton" onClick={this.hideProjectKnitGridList}><Icon link name='close' /></button>
+              <div className="tree">
+
+                <ProjectKnitGridList
+                    projectTreeData={this.state.projectTreeData}
+                    onSelectNode={this.onSelectNode}
+                    selectedKnitgridId={this.state.selectedKnitgridId}
+                />
+              </div>
+            </Grid.Column>
+            <Grid.Column width={12}>
+              <h1>{knitgridTitle}</h1>
+              {knitgridTable}
+            </Grid.Column>
+          </Grid>
+      )
+    } else {
+      appContent = (
+
+
+              <div>
+                <div style={{float: "left"}}>
+                  <button className="openButton" onClick={this.showProjectKnitGridList}><Icon name="sidebar"/></button>
+                </div>
+                <div >
+              <h1 style={{marginLeft: "2em"}}>{knitgridTitle}</h1>
+
+                </div>
+                {knitgridTable}
+              </div>
+
+      )
+    }
+
     return (
         <div className="App">
           <div>
@@ -526,21 +578,7 @@ class App extends Component {
               paddingLeft: "1em",
               paddingRight: "0em"
             }}>
-              <Grid divided>
-                <Grid.Column width={4} floated='left'>
-                  <div className="tree">
-                    <ProjectKnitGridList
-                        projectTreeData={this.state.projectTreeData}
-                        onSelectNode={this.onSelectNode}
-                        selectedKnitgridId={this.state.selectedKnitgridId}
-                    />
-                  </div>
-                </Grid.Column>
-                <Grid.Column width={12}>
-                  <h1>{knitgridTitle}</h1>
-                  {knitgridTable}
-                </Grid.Column>
-              </Grid>
+              {appContent}
             </div>
           </div>
           <NewProjectModal visible={this.state.newProjectModalVisible}

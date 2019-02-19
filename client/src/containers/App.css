@@ -306,10 +306,31 @@ div.wrapperEditor {
   max-height: 600px;
 }
 
-.divider{
+.divider {
   width:10px;
   height:auto;
   display:inline-block;
 }
 
+.closeButton {
+  line-height: 12px;
+  font-size: 8pt;
+
+  margin-top: 5px;
+  margin-right: 5px;
+  position:absolute;
+  text-align: center;
+  top:0;
+  right:0;
+}
+
+.openButton {
+  line-height: 12px;
+  font-size: 8pt;
+
+  margin-top: 5px;
+  margin-right: 5px;
+
+
+}
 

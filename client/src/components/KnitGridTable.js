@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Table, Label, Icon, Button} from 'semantic-ui-react';
 import {DragDropContainer, DropTarget} from 'react-drag-drop-container';
+import {MenuItemIds} from '../constants/Constants';
 
 class KnitGridTable extends Component {
 
@@ -52,6 +53,10 @@ class KnitGridTable extends Component {
       case "z":
         console.log("navigating to first cell in next row");
         this.goToFirstCellInNextRow();
+        break;
+      case "s":
+        console.log("saving project");
+        this.props.handleMenuSelection(MenuItemIds.SAVE_PROJECT);
         break;
       default:
         console.log("key not registered");
