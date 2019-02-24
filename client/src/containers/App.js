@@ -512,6 +512,7 @@ class App extends Component {
                 cellSelected={this.cellSelected}
                 registerKeyboardShortcut={this.registerKeyboardShortcut}
                 startEditing={this.startEditing}
+                handleMenuSelection={this.handleMenuSelection}
             />
         );
       }
