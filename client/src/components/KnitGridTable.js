@@ -5,6 +5,11 @@ import {MenuItemIds} from '../constants/Constants';
 
 class KnitGridTable extends Component {
 
+  state = {
+    rowIndex: -1,
+    columnIndex: -1
+  };
+
   componentDidMount() {
     this.scrollDragLabelIntoView();
     if (this.props.registerKeyboardShortcut) {
@@ -13,20 +18,47 @@ class KnitGridTable extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    this.scrollDragLabelIntoView();
+    //if (prevState.rowIndex !== this.state.rowIndex) {
+    //   this.scrollDragLabelIntoView();
+    //}
   }
+
+  setRowAndColumnIndex = (grid, rowIndex, columnIndex) => {
+    this.setState({
+      rowIndex: rowIndex,
+      columnIndex: columnIndex
+    });
+    if (rowIndex >= 0 && columnIndex >= 0) {
+      this.props.cellSelected(grid[rowIndex].cells[columnIndex].id);
+    }
+  };
 
   scrollDragLabelIntoView() {
     const el = document.getElementById('dragLabel');
     if (!el) {
       return;
     }
+    // if (this.isScrolledIntoView(el)) {
+    //   return;
+    // }
     el.scrollIntoView();
     const scrolledY = window.scrollY;
 
     if (scrolledY) {
       window.scroll(0, scrolledY - 70);
     }
+  }
+
+  isScrolledIntoView(el) {
+    let rect = el.getBoundingClientRect();
+    let elemTop = rect.top;
+    let elemBottom = rect.bottom;
+
+    // Only completely visible elements return true:
+    let isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+    // Partially visible elements return true:
+    //isVisible = elemTop < window.innerHeight && elemBottom >= 0;
+    return isVisible;
   }
 
   handleMarkerInputChange = (event) => {
@@ -85,9 +117,8 @@ class KnitGridTable extends Component {
         break;
       }
     }
-    if (nextRowIndex >= 0 && nextColumnIndex >= 0) {
-      this.props.cellSelected(grid[nextRowIndex].cells[nextColumnIndex].id);
-    }
+    this.setRowAndColumnIndex(grid, nextRowIndex, nextColumnIndex);
+
   };
 
   goToNextCell = () => {
@@ -116,9 +147,7 @@ class KnitGridTable extends Component {
         break;
       }
     }
-    if (nextRowIndex >= 0 && nextColumnIndex >= 0) {
-      this.props.cellSelected(grid[nextRowIndex].cells[nextColumnIndex].id);
-    }
+    this.setRowAndColumnIndex(grid, nextRowIndex, nextColumnIndex);
   };
 
   goToPreviousCell = () => {
@@ -147,9 +176,7 @@ class KnitGridTable extends Component {
         break;
       }
     }
-    if (nextRowIndex >= 0 && nextColumnIndex >= 0) {
-      this.props.cellSelected(grid[nextRowIndex].cells[nextColumnIndex].id);
-    }
+    this.setRowAndColumnIndex(grid, nextRowIndex, nextColumnIndex);
   };
 
   currentRowLabelDropped = (e) => {
